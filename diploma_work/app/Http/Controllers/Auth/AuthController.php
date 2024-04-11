@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Mail\PasswordResetMail;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,14 +21,13 @@ class AuthController extends BaseController
     {
         $user = $this->service->login($request);
 
-        if (Auth::attempt(['email' => $user->email, 'password' => $user->password])) {
+        if (Auth::attempt($request->only('email', 'password'))) {
+
             $token = $user->createToken('API Token')->plainTextToken;
 
             return response()->json(['user' => $user, 'token' => $token], 200);
         } else {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            return response()->json(['error' => 'The provided credentials are incorrect.'], 401);
         }
     }
 
@@ -58,23 +58,22 @@ class AuthController extends BaseController
     {
 
         $user = $this->service->createCode($request);
-
         // Send the password reset email
-        Mail::to($user->email)->send(new PasswordResetMail($user->code));
+        Mail::to($user->email)->send(new PasswordResetMail($user->reset_code));
 
         return response()->json(['message' => 'Password reset email sent successfully']);
     }
 
     public function resetPassword(Request $request)
     {
+        $this->service->notAuthUser($request);
 
-        if (!Auth::check()) {
-            $this->service->notAuthUser($request);
-        } else {
-            $this->service->authUser($request);
-        }
+        return response()->json(['message' => 'Password reset successfully']);
+    }
 
-
+    public function resetAuthPassword(Request $request)
+    {
+        $this->service->authUser($request);
         return response()->json(['message' => 'Password reset successfully']);
     }
 }
