@@ -76,12 +76,11 @@ class AuthService
     {
         $request->validate([
             'email' => 'required|email',
-            'code' => 'required|string',
+            'reset_code' => 'required|string',
             'password' => 'required|string|confirmed',
         ]);
 
-        $user = User::where('email', $request->email)->where('reset_code', $request->code)->first();
-
+        $user = User::where('email', $request->email)->where('reset_code', $request->reset_code)->first();
         if (!$user) {
             return response()->json(['error' => 'Invalid code'], 422);
         }
@@ -99,6 +98,6 @@ class AuthService
         $code = Str::random(6); // Generate a random code
         $user->update(['reset_code' => $code]);
 
-        return $user->fresh();
+        return $user;
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -32,6 +31,7 @@ class PasswordResetMail extends Mailable
     public function build()
     {
         return $this->subject('Password Reset Request')
-            ->view('emails.password_reset'); // Assuming your blade file is named 'password_reset.blade.php' and located in 'resources/views/emails' directory
+            ->view('emails.password_reset', ['code' => $this->code]);
     }
+
 }
