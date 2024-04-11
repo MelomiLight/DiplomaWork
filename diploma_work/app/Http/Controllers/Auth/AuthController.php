@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
 use App\Mail\PasswordResetMail;
 use Illuminate\Http\JsonResponse;
@@ -11,7 +11,6 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends BaseController
 {
-
     /**
      * @param Request $request
      * @return JsonResponse
