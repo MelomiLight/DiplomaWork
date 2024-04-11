@@ -1,15 +1,15 @@
 <?php
 
-namespace app\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Services\Auth\Service;
+use App\Services\AuthService;
 
 class BaseController extends Controller
 {
     public $service;
 
-    public function __construct(Service $service)
+    public function __construct(AuthService $service)
     {
         $this->service = $service;
     }

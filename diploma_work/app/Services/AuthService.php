@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Services\Auth;
+namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-class Service
+class AuthService
 {
 
     public function login(Request $request)
