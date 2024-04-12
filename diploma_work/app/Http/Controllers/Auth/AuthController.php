@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\UserCreated;
+use App\Listeners\UserCreatedEmailNotification;
 use App\Mail\PasswordResetMail;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -39,6 +41,8 @@ class AuthController extends BaseController
     {
 
         $data = $this->service->register($request);
+
+        event(new UserCreated($data['user']));
 
         return response()->json(['user' => $data['user'], 'token' => $data['token']], 201);
     }
