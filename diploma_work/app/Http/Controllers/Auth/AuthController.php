@@ -42,7 +42,6 @@ class AuthController extends BaseController
 
         $data = $this->service->register($request);
 
-        event(new UserCreated($data['user']));
 
         return response()->json(['user' => $data['user'], 'token' => $data['token']], 201);
     }
