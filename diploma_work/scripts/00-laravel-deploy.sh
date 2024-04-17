@@ -14,5 +14,5 @@ php artisan optimize
 echo "Running migrations..."
 php artisan migrate --force
 
-echo "Running queues..."
-php artisan queue:work
+#echo "Running queues..."
+#php artisan queue:work
