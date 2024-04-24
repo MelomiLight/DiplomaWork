@@ -8,10 +8,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
-
+    /**
+     * @throws ValidationException
+     * @throws \Exception
+     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -20,19 +24,21 @@ class AuthService
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            throw ValidationException::withMessages($validator->errors()->toArray());
         }
 
-        // Check if user exists in the database
+// Check if user exists in the database
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw new \Exception('The provided credentials are incorrect.', 401);
         }
+
         return $user;
     }
 
     /**
+     * @throws ValidationException
      * @throws \Exception
      */
     public function register(Request $request)
@@ -44,8 +50,9 @@ class AuthService
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            throw ValidationException::withMessages($validator->errors()->toArray());
         }
+
         try {
             DB::beginTransaction();
             $user = User::create([
@@ -58,44 +65,24 @@ class AuthService
 
             DB::commit();
             return ['user' => $user, 'token' => $token];
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             DB::rollBack();
-
             throw $exception;
         }
     }
 
-    public function authUser(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string|confirmed',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-        $user->update(['password' => Hash::make($request->password)]);
-    }
-
-    public function notAuthUser(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'reset_code' => 'required|string',
-            'password' => 'required|string|confirmed',
-        ]);
-
-        $user = User::where('email', $request->email)->where('reset_code', $request->reset_code)->first();
-        if (!$user) {
-            return response()->json(['error' => 'Invalid code'], 422);
-        }
-        $user->update(['password' => Hash::make($request->password), 'reset_code' => null]);
-    }
-
+    /**
+     * @throws ValidationException
+     */
     public function createCode(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:users,email',
         ]);
+
+        if ($validator->fails()) {
+            throw ValidationException::withMessages($validator->errors()->toArray());
+        }
 
         $user = User::where('email', $request->email)->first();
 
@@ -103,5 +90,45 @@ class AuthService
         $user->update(['reset_code' => $code]);
 
         return $user;
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function authUser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            throw ValidationException::withMessages($validator->errors()->toArray());
+        }
+        $user = User::where('email', $request->email)->first();
+        $user->update(['password' => Hash::make($request->password)]);
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws \Exception
+     */
+    public function notAuthUser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'reset_code' => 'required|string',
+            'password' => 'required|string|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            throw ValidationException::withMessages($validator->errors()->toArray());
+        }
+
+        $user = User::where('email', $request->email)->where('reset_code', $request->reset_code)->first();
+        if (!$user) {
+            throw new \Exception('Invalid code', 422);
+        }
+        $user->update(['password' => Hash::make($request->password), 'reset_code' => null]);
     }
 }

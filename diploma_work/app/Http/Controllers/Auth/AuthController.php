@@ -2,59 +2,62 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Events\UserCreated;
-use App\Listeners\UserCreatedEmailNotification;
+use App\Http\Controllers\Controller;
 use App\Mail\PasswordResetMail;
-use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class AuthController extends BaseController
+class AuthController extends Controller
 {
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws ValidationException
-     */
+    protected AuthService $service;
+
+    public function __construct(AuthService $service)
+    {
+        $this->service = $service;
+    }
+
     public function login(Request $request): JsonResponse
     {
-        $user = $this->service->login($request);
-
-        if (Auth::attempt($request->only('email', 'password'))) {
-
+        try {
+            $user = $this->service->login($request);
             $token = $user->createToken('API Token')->plainTextToken;
 
             return response()->json(['user' => $user, 'token' => $token], 200);
-        } else {
-            return response()->json(['error' => 'The provided credentials are incorrect.'], 401);
+        } catch (ValidationException $exception) {
+            return response()->json(['errors' => $exception->errors()], 422);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], $exception->getCode());
         }
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function register(Request $request): JsonResponse
     {
-
         try {
             $data = $this->service->register($request);
 
             return response()->json(['user' => $data['user'], 'token' => $data['token']], 201);
+        } catch (ValidationException $exception) {
+            return response()->json(['errors' => $exception->errors()], 422);
         } catch (\Exception $exception) {
             return response()->json(['error' => 'An error occurred while creating user: ' . $exception->getMessage()], 500);
         }
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
+
     public function logout(Request $request): JsonResponse
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Successfully logged out']);
@@ -62,24 +65,42 @@ class AuthController extends BaseController
 
     public function forgotPassword(Request $request): JsonResponse
     {
+        try {
+            $user = $this->service->createCode($request);
 
-        $user = $this->service->createCode($request);
-        // Send the password reset email
-        Mail::to($user->email)->send(new PasswordResetMail($user->reset_code));
+            // Send the password reset email
+            Mail::to($user->email)->send(new PasswordResetMail($user->reset_code));
 
-        return response()->json(['message' => 'Password reset email sent successfully']);
+            return response()->json(['message' => 'Password reset email sent successfully']);
+        } catch (ValidationException $exception) {
+            return response()->json(['errors' => $exception->errors()], 422);
+        }
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(Request $request): JsonResponse
     {
-        $this->service->notAuthUser($request);
+        try {
+            $this->service->notAuthUser($request);
 
-        return response()->json(['message' => 'Password reset successfully']);
+            return response()->json(['message' => 'Password reset successfully']);
+        } catch (ValidationException $exception) {
+            return response()->json(['errors' => $exception->errors()], 422);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], $exception->getCode());
+        }
     }
 
-    public function resetAuthPassword(Request $request)
+    public function resetAuthPassword(Request $request): JsonResponse
     {
-        $this->service->authUser($request);
-        return response()->json(['message' => 'Password reset successfully']);
+        try {
+            $this->service->authUser($request);
+
+            return response()->json(['message' => 'Password reset successfully']);
+        } catch (ValidationException $exception) {
+            return response()->json(['errors' => $exception->errors()], 422);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], $exception->getCode());
+        }
     }
+
 }
