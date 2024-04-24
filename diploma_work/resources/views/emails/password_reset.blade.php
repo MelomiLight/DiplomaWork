@@ -44,12 +44,12 @@
 
         .c-email__content {
             width: 100%;
-            height: 300px;
+            height: 350px;
             display: flex;
             flex-direction: column;
             justify-content: space-around;
             align-items: center;
-            flex-wrap: wrap;
+
             background-color: #fff;
             padding: 15px;
         }
@@ -86,7 +86,7 @@
         <p class="c-email__content__text">You are receiving this email because we received a password reset request for
             your account.</p>
         <div class="c-email__code">
-            <span class="c-email__code__text">{{ $code }}</span>
+            <span class="c-email__code__text">77878</span>
         </div>
         <p class="c-email__content__text">If you did not request a password reset, no further action is required.</p>
         <p class="c-email__content__text">Thank you!</p>
