@@ -15,9 +15,8 @@ Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 
 
 //protected routes
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/password/auth/reset', [AuthController::class, 'resetAuthPassword']);
 });
 
-//Route::post('/login', [AuthController::class, 'login']);
