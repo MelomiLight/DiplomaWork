@@ -43,7 +43,6 @@ class AuthService
             return response()->json(['errors' => $validator->errors()], 422);
         }
         try {
-            DB::beginTransaction();
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -52,11 +51,8 @@ class AuthService
 
             $token = $user->createToken('API Token of ' . $user->name)->plainTextToken;
 
-            DB::commit();
             return ['user' => $user, 'token' => $token];
         }catch (\Exception $exception){
-            DB::rollBack();
-
             return response()->json(['error' => 'An error occurred while creating user'.$exception->getMessage()], 500);
         }
     }
