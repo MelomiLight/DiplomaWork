@@ -40,10 +40,13 @@ class AuthController extends BaseController
     public function register(Request $request): JsonResponse
     {
 
-        $data = $this->service->register($request);
+        try {
+            $data = $this->service->register($request);
 
-
-        return response()->json(['user' => $data['user'], 'token' => $data['token']], 201);
+            return response()->json(['user' => $data['user'], 'token' => $data['token']], 201);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => 'An error occurred while creating user: ' . $exception->getMessage()], 500);
+        }
     }
 
     /**
