@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
@@ -98,14 +99,13 @@ class AuthService
     public function authUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
             'password' => 'required|string|confirmed',
         ]);
 
         if ($validator->fails()) {
             throw ValidationException::withMessages($validator->errors()->toArray());
         }
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', Auth::user()->email)->first();
         $user->update(['password' => Hash::make($request->password)]);
     }
 

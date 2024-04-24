@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -52,10 +53,8 @@ class AuthController extends Controller
     {
         try {
             // Ensure the user is authenticated
-            $user = Auth::user();
+            Auth::user()->currentAccessToken()->delete();
 
-            // Perform logout logic
-            $request->user()->currentAccessToken()->delete();
 
             return response()->json(['message' => 'Successfully logged out']);
         } catch (\Exception $exception) {
@@ -99,9 +98,6 @@ class AuthController extends Controller
     public function resetAuthPassword(Request $request): JsonResponse
     {
         try {
-            // Ensure the user is authenticated
-            $user = Auth::user();
-
             // Perform password reset logic
             $this->service->authUser($request);
 
