@@ -50,18 +50,19 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users,email',
-        ]);
+        try {
+            // Ensure the user is authenticated
+            $user = Auth::user();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            // Perform logout logic
+            $request->user()->currentAccessToken()->delete();
+
+            return response()->json(['message' => 'Successfully logged out']);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], $exception->getCode());
         }
-
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Successfully logged out']);
     }
+
 
     public function forgotPassword(Request $request): JsonResponse
     {
@@ -72,10 +73,15 @@ class AuthController extends Controller
             Mail::to($user->email)->send(new PasswordResetMail($user->reset_code));
 
             return response()->json(['message' => 'Password reset email sent successfully']);
-        } catch (ValidationException $exception) {
-            return response()->json(['errors' => $exception->errors()], 422);
+        } catch (\Exception $exception) {
+            // Log the exception for debugging purposes
+            \Log::error('Error sending password reset email: ' . $exception->getMessage());
+
+            // Return a generic error message with status code 500
+            return response()->json(['error' => 'An error occurred while sending the password reset email. Please try again later.'], 500);
         }
     }
+
 
     public function resetPassword(Request $request): JsonResponse
     {
@@ -93,6 +99,10 @@ class AuthController extends Controller
     public function resetAuthPassword(Request $request): JsonResponse
     {
         try {
+            // Ensure the user is authenticated
+            $user = Auth::user();
+
+            // Perform password reset logic
             $this->service->authUser($request);
 
             return response()->json(['message' => 'Password reset successfully']);
