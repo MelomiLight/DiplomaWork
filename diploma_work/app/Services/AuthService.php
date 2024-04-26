@@ -47,11 +47,14 @@ class AuthService
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
         ]);
 
         if ($validator->fails()) {
-            throw ValidationException::withMessages($validator->errors()->toArray());
+            // Extract the first error message
+            $firstErrorMessage = $validator->errors()->first();
+            // Throw a ValidationException with a custom message
+            throw new ValidationException($validator, response()->json(['error' => $firstErrorMessage], 422));
         }
 
         try {
@@ -106,7 +109,7 @@ class AuthService
             throw ValidationException::withMessages($validator->errors()->toArray());
         }
         $user = User::where('email', Auth::user()->email)->first();
-        $user->update(['password' => Hash::make($request->password)]);
+        $user->update(['password' => Hash::make($request->password), 'reset_code' => null]);
     }
 
     /**
