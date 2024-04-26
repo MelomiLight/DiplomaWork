@@ -39,12 +39,11 @@ class AuthController extends Controller
     {
         try {
             $data = $this->service->register($request);
-
-            return response()->json(['user' => $data['user'], 'token' => $data['token']], 201);
+            return response()->json(['token' => $data['token']], 201);
         } catch (ValidationException $exception) {
-            return response()->json(['errors' => $exception->errors()], 422);
+            return $exception->response;
         } catch (\Exception $exception) {
-            return response()->json(['error' => 'An error occurred while creating user: ' . $exception->getMessage()], 500);
+            return response()->json(['error' => 'An error occurred while creating the user: ' . $exception->getMessage()], 500);
         }
     }
 
