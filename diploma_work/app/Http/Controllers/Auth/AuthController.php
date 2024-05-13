@@ -9,38 +9,50 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $request, AuthService $authService): JsonResponse
+    private $service;
+    public function __construct(AuthService $service)
     {
-        $token = $authService->createUser($request);
+        $this->service = $service;
+    }
+
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        $token = $this->service->createUser($request);
 
         return response()->json(['token' => $token], 201);
     }
 
 
-    public function login(LoginRequest $request, AuthService $authService): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $token = $authService->loginUser($request);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['error' => 'The provided credentials are incorrect.'], 401);
+        }
+
+        // Retrieve the authenticated user
+        $user = Auth::user();
+
+        $token = $this->service->loginUser($user);
 
         return response()->json(['token' => $token], 201);
     }
 
-    public function forgotPassword(ForgotRequest $request, AuthService $authService): JsonResponse
+    public function forgotPassword(ForgotRequest $request): JsonResponse
     {
-        $user = $authService->forgotPassword($request);
+        $user = $this->service->forgotPassword($request);
 
-        $authService->sendMailToUser($user);
+        $this->service->sendMailToUser($user);
 
         return response()->json(['message' => 'Password reset email sent successfully']);
     }
 
-    public function changePassword(ChangeRequest $request, AuthService $authService): JsonResponse
+    public function changePassword(ChangeRequest $request): JsonResponse
     {
-        $authService->changePassword($request);
+        $this->service->changePassword($request);
 
         return response()->json(['message' => 'password successfully changed!']);
     }
@@ -50,11 +62,11 @@ class AuthController extends Controller
         try {
             // Ensure the user is authenticated
             Auth::user()->currentAccessToken()->delete();
-
-
-            return response()->json(['message' => 'Successfully logged out']);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], $exception->getCode());
         }
+
+
+        return response()->json(['message' => 'Successfully logged out']);
     }
 }
