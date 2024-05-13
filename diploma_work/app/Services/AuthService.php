@@ -4,12 +4,12 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
@@ -108,7 +108,7 @@ class AuthService
         if ($validator->fails()) {
             throw ValidationException::withMessages($validator->errors()->toArray());
         }
-        $user = User::where('email', Auth::user()->email)->first();
+        $user = User::where('email', Auth()->user()->email)->first();
         $user->update(['password' => Hash::make($request->password), 'reset_code' => null]);
     }
 

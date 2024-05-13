@@ -7,10 +7,9 @@ use App\Mail\PasswordResetMail;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -73,7 +72,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Password reset email sent successfully']);
         } catch (\Exception $exception) {
             // Log the exception for debugging purposes
-            \Log::error('Error sending password reset email: ' . $exception->getMessage());
+
 
             // Return a generic error message with status code 500
             return response()->json(['error' => 'An error occurred while sending the password reset email. Please try again later.'], 500);
