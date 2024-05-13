@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     private $service;
+
     public function __construct(AuthService $service)
     {
         $this->service = $service;

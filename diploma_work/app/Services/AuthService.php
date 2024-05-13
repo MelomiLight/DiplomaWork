@@ -7,14 +7,17 @@ use App\Http\Requests\Auth\ForgotRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Mail\SendForgotPassword;
 use App\Models\User;
+use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Mockery\Exception;
 
 class AuthService
 {
+    /**
+     * @throws Exception
+     */
     public function createUser(RegisterRequest $request)
     {
         try {
@@ -27,6 +30,9 @@ class AuthService
         return $user->createToken('API token of ' . $user->name)->plainTextToken;
     }
 
+    /**
+     * @throws Exception
+     */
     public function loginUser(Authenticatable $user)
     {
         try {
@@ -38,6 +44,9 @@ class AuthService
         return $token;
     }
 
+    /**
+     * @throws Exception
+     */
     public function forgotPassword(ForgotRequest $request)
     {
         try {
@@ -52,6 +61,9 @@ class AuthService
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function sendMailToUser(User $user): void
     {
         try {
@@ -61,6 +73,9 @@ class AuthService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function changePassword(ChangeRequest $request): void
     {
         try {
@@ -76,3 +91,4 @@ class AuthService
         }
     }
 }
+
