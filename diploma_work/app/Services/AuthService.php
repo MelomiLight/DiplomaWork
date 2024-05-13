@@ -4,11 +4,10 @@ namespace App\Services;
 
 use App\Http\Requests\Auth\ChangeRequest;
 use App\Http\Requests\Auth\ForgotRequest;
-use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Mail\SendForgotPassword;
 use App\Models\User;
-use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -21,26 +20,22 @@ class AuthService
         try {
             $request->password = Hash::make($request->password);
             $user = User::create($request->all());
-
-            return $user->createToken('API token of ' . $user->name)->plainTextToken;
         } catch (\Exception) {
             throw new Exception('Could not create user', 500);
         }
+
+        return $user->createToken('API token of ' . $user->name)->plainTextToken;
     }
 
-    public function loginUser(LoginRequest $request)
+    public function loginUser(Authenticatable $user)
     {
         try {
-            $user = User::where('email', $request->email)->first();
-
-            if (!Hash::check($request->password, $user->password)) {
-                throw new AuthenticationException('The provided credentials are incorrect.');
-            }
-
-            return $user->createToken('API token of ' . $user->name)->plainTextToken;
+            $token = $user->createToken('API token of ' . $user->name)->plainTextToken;
         } catch (\Exception $e) {
             throw new Exception('Could not create token. ' . $e->getMessage(), 500);
         }
+
+        return $token;
     }
 
     public function forgotPassword(ForgotRequest $request)
