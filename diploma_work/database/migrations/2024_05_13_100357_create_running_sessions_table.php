@@ -17,7 +17,7 @@ return new class extends Migration
             $table->float('distance_km')->nullable(); // distance covered
             $table->timestamp('start_time')->nullable(); // start of the session
             $table->timestamp('end_time')->nullable(); // end of the session
-            $table->timestamp('total_time')->nullable();
+            $table->time('total_time')->nullable();
             $table->float('average_speed')->nullable(); // average speed
             $table->float('max_speed')->nullable(); // maximum speed
             $table->float('calories_burned')->nullable(); // kilocalories burned
