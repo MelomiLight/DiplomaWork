@@ -2,136 +2,82 @@
 
 namespace App\Services;
 
+use App\Http\Requests\Auth\ChangeRequest;
+use App\Http\Requests\Auth\ForgotRequest;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Mail\SendForgotPassword;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Auth;
+use Mockery\Exception;
 
 class AuthService
 {
-    /**
-     * @throws ValidationException
-     * @throws \Exception
-     */
-    public function login(Request $request)
+    public function createUser(RegisterRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            throw ValidationException::withMessages($validator->errors()->toArray());
-        }
-
-// Check if user exists in the database
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw new \Exception('The provided credentials are incorrect.', 401);
-        }
-
-        return $user;
-    }
-
-    /**
-     * @throws ValidationException
-     * @throws \Exception
-     */
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-        ]);
-
-        if ($validator->fails()) {
-            // Extract the first error message
-            $firstErrorMessage = $validator->errors()->first();
-            // Throw a ValidationException with a custom message
-            throw new ValidationException($validator, response()->json(['error' => $firstErrorMessage], 422));
-        }
-
         try {
-            DB::beginTransaction();
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
+            $request->password = Hash::make($request->password);
+            $user = User::create($request->all());
+
+            return $user->createToken('API token of ' . $user->name)->plainTextToken;
+        } catch (\Exception) {
+            throw new Exception('Could not create user', 500);
+        }
+    }
+
+    public function loginUser(LoginRequest $request)
+    {
+        try {
+            $user = User::where('email', $request->email)->first();
+
+            if (!Hash::check($request->password, $user->password)) {
+                throw new AuthenticationException('The provided credentials are incorrect.');
+            }
+
+            return $user->createToken('API token of ' . $user->name)->plainTextToken;
+        } catch (\Exception $e) {
+            throw new Exception('Could not create token. ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function forgotPassword(ForgotRequest $request)
+    {
+        try {
+            $user = User::where('email', $request->email)->first();
+            $code = Str::random(6); // Generate a random code
+            $user->update(['reset_code' => $code]);
+
+            return $user;
+        } catch (\Exception) {
+            throw new Exception('Could not create reset code', 500);
+        }
+
+    }
+
+    public function sendMailToUser(User $user): void
+    {
+        try {
+            Mail::to($user->email)->send(new SendForgotPassword($user->reset_code));
+        } catch (\Exception) {
+            throw new Exception('Could not send mail', 500);
+        }
+    }
+
+    public function changePassword(ChangeRequest $request): void
+    {
+        try {
+            $request->password = Hash::make($request->password);
+
+            $user = User::where('email', $request->email)->first();
+            $user->update([
+                'password' => $request->password,
+                'reset_code' => null,
             ]);
-
-            $token = $user->createToken('API Token of ' . $user->name)->plainTextToken;
-
-            DB::commit();
-            return ['user' => $user, 'token' => $token];
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            throw $exception;
+        } catch (\Exception) {
+            throw new Exception('Could not change password', 500);
         }
-    }
-
-    /**
-     * @throws ValidationException
-     */
-    public function createCode(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users,email',
-        ]);
-
-        if ($validator->fails()) {
-            throw ValidationException::withMessages($validator->errors()->toArray());
-        }
-
-        $user = User::where('email', $request->email)->first();
-
-        $code = Str::random(6); // Generate a random code
-        $user->update(['reset_code' => $code]);
-
-        return $user;
-    }
-
-    /**
-     * @throws ValidationException
-     */
-    public function authUser(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'password' => 'required|string|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            throw ValidationException::withMessages($validator->errors()->toArray());
-        }
-        $user = User::where('email', Auth::user()->email)->first();
-        $user->update(['password' => Hash::make($request->password), 'reset_code' => null]);
-    }
-
-    /**
-     * @throws ValidationException
-     * @throws \Exception
-     */
-    public function notAuthUser(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'reset_code' => 'required|string',
-            'password' => 'required|string|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            throw ValidationException::withMessages($validator->errors()->toArray());
-        }
-
-        $user = User::where('email', $request->email)->where('reset_code', $request->reset_code)->first();
-        if (!$user) {
-            throw new \Exception('Invalid code', 422);
-        }
-        $user->update(['password' => Hash::make($request->password), 'reset_code' => null]);
     }
 }
