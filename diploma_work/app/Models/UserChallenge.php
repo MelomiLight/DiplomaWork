@@ -13,13 +13,14 @@ class UserChallenge extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function challenges(): HasMany
+    public function challenge()
     {
-        return $this->hasMany(Challenge::class);
+        return $this->belongsTo(Challenge::class, 'challenge_id');
     }
 }
