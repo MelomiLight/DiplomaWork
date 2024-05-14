@@ -13,6 +13,12 @@ class RunningSession extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'total_time' => 'datetime',
+    ];
+
     /**
      * Get the user that owns the running session.
      */
