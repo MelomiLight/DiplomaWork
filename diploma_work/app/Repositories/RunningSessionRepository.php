@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\RunningSession;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class RunningSessionRepository implements Repository
 {
@@ -14,8 +15,10 @@ class RunningSessionRepository implements Repository
         return RunningSession::find($id);
     }
 
-    public function all($user_id): Collection
+    public function all($user): Collection
     {
-        return User::where('id', $user_id)->first()->runningSessions;
+//        $token = PersonalAccessToken::findToken($token);
+//        $user = $token->tokenable;
+        return $user->runningSessions;
     }
 }

@@ -22,7 +22,7 @@ class RunningSessionController extends Controller
 
     public function index(RunningSessionRequest $request): AnonymousResourceCollection
     {
-        $runningSessions = $this->repository->all($request->user_id);
+        $runningSessions = $this->repository->all($request->user());
         return RunningSessionResource::collection($runningSessions);
     }
 
