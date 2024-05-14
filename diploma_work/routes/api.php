@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\RunningSessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,5 +19,9 @@ Route::prefix('sanctum')->group(function () {
 //protected routes
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::prefix('/run')->group(function (){
+        Route::post('/session/store', [RunningSessionController::class, 'store']);
+        Route::get('/session/index', [RunningSessionController::class, 'index']);
+    });
 });
 
