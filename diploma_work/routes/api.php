@@ -25,6 +25,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/session/index', [RunningSessionController::class, 'index']);
     });
     Route::prefix('/user')->group(function (){
+        Route::get('/index', [UserController::class, 'index']);
+        Route::get('/show/{user}', [UserController::class, 'show']);
         Route::patch('/update', [UserController::class, 'update']);
     });
 });

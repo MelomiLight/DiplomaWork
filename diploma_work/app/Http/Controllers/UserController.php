@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\RunInformationResource;
 use App\Http\Resources\UserResource;
-use App\Services\AuthService;
+use App\Models\User;
+use App\Repositories\UserRepository;
 use App\Services\UserService;
 use Exception;
-use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     private $service;
+    private $repository;
 
-    public function __construct(UserService $service)
+    public function __construct(UserRepository $repository, UserService $service)
     {
+        $this->repository = $repository;
         $this->service = $service;
     }
 
@@ -29,5 +33,15 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
+    public function show(User $user): UserResource
+    {
+        $run_info = new RunInformationResource($user->runInformation());
+        return (new UserResource($user))->additional(['run_info' => $run_info]);
+    }
 
+    public function index(): AnonymousResourceCollection
+    {
+        $users = $this->repository->all();
+        return UserResource::collection($users);
+    }
 }

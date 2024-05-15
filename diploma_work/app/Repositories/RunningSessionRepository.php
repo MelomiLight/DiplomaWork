@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Sanctum\PersonalAccessToken;
 
-class RunningSessionRepository implements Repository
+class RunningSessionRepository
 {
 
     public function find($id)

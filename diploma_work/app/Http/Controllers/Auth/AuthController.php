@@ -49,8 +49,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         $token = $this->service->loginUser($user);
-        $run_info=new RunInformationResource($user->runInformation);
-        return (new UserResource($user))->additional(['token' => $token, 'run_info'=>$run_info]);
+        return (new UserResource($user))->additional(['token' => $token]);
     }
 
     /**
