@@ -7,6 +7,4 @@ Route::get('/', function () {
 });
 
 
-Route::get('/hello', function () {
-    dd("Hello");
-});
+
