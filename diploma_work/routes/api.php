@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\RunningSessionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('/run')->group(function (){
         Route::post('/session/store', [RunningSessionController::class, 'store']);
         Route::get('/session/index', [RunningSessionController::class, 'index']);
+    });
+    Route::prefix('/user')->group(function (){
+        Route::patch('/update', [UserController::class, 'update']);
     });
 });
 

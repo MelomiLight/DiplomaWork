@@ -17,8 +17,6 @@ class RunningSessionRepository implements Repository
 
     public function all($user): Collection
     {
-//        $token = PersonalAccessToken::findToken($token);
-//        $user = $token->tokenable;
         return $user->runningSessions;
     }
 }

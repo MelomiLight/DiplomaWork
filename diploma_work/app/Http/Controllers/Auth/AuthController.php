@@ -7,11 +7,14 @@ use App\Http\Requests\Auth\ChangeRequest;
 use App\Http\Requests\Auth\ForgotRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\RunInformationResource;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -46,8 +49,8 @@ class AuthController extends Controller
         $user = Auth::user();
 
         $token = $this->service->loginUser($user);
-
-        return new UserResource($user, $token);
+        $run_info=new RunInformationResource($user->runInformation);
+        return (new UserResource($user))->additional(['token' => $token, 'run_info'=>$run_info]);
     }
 
     /**
@@ -80,7 +83,6 @@ class AuthController extends Controller
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], $exception->getCode());
         }
-
 
         return response()->json(['message' => 'Successfully logged out']);
     }

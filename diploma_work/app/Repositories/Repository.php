@@ -10,4 +10,5 @@ interface Repository
 {
     public function find($id);
     public function all($user);
+
 }
