@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckChallengesController;
+use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\RunningSessionController;
 use App\Http\Controllers\UserChallengeController;
 use App\Http\Controllers\UserController;
@@ -50,5 +51,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/delete/{challenge}', [CheckChallengesController::class, 'destroy']);
     });
 
+    Route::get('/leaderboard', [LeaderboardController::class, 'index']);
+
+    Route::get('/user_points', function (Request $request) {
+        $user = $request->user();
+        return response()->json($user->userPoints);
+    });
 });
 
