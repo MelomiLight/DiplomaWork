@@ -27,14 +27,25 @@ class UserChallengeController extends Controller
         return response()->json($userChallenge);
     }
 
-    public function show(User $user): AnonymousResourceCollection
+    public function show(User $user): JsonResponse
     {
         $userChallenges = $user->userChallenges;
-        return UserChallengeResource::collection($userChallenges);
+
+        $groupedChallenges = $userChallenges->groupBy(function($item) {
+            return $item->challenge->due_type;
+        });
+
+        $response = [
+            'daily' => UserChallengeResource::collection($groupedChallenges->get('daily', collect())),
+            'weekly' => UserChallengeResource::collection($groupedChallenges->get('weekly', collect())),
+            'monthly' => UserChallengeResource::collection($groupedChallenges->get('monthly', collect())),
+        ];
+
+        return response()->json($response);
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user): void
     {
-        return $this->service->remove($user);
+        $this->service->remove($user);
     }
 }
