@@ -27,17 +27,23 @@ class CheckChallengesController extends Controller
     {
         $user = $request->user();
         $message = false;
+        $context = null;
+
         foreach ($user->userChallenges as $userChallenge) {
             if (!$userChallenge->challenge_status) {
                 if ($userChallenge->challenge->challenge_type == 'distanceChallenge') {
                     $context = new ContextService(new DistanceChallengeController($this->service));
                 }
-                $message = $context->checkChallenge($user, $userChallenge);
+
+                if ($context) {
+                    $message = $context->checkChallenge($user, $userChallenge);
+                }
             }
         }
 
         return response()->json(['message' => $message]);
     }
+
 
     public function store(ChallengeRequest $request): ChallengeResource
     {
