@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('title', 255)->nullable();
             $table->text('description')->nullable();
             $table->string('due_type', 50)->nullable(); // 'daily', 'weekly', 'monthly'
-            $table->string('challenge_type')->nullable();
+            $table->string('challenge_type')->nullable();// 'distanceChallenge'
             $table->boolean('is_active')->default(false);
             $table->integer('points')->nullable();
             $table->float('distance_km')->nullable(); // required distance in km

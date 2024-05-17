@@ -11,12 +11,21 @@ class RunningSession extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'distance_km',
+        'start_time',
+        'end_time',
+        'total_time',
+        'average_speed',
+        'max_speed',
+        'calories_burned',
+        'points',
+    ];
 
     protected $casts = [
         'start_time' => 'datetime',
         'end_time' => 'datetime',
-        'total_time' => 'datetime',
     ];
 
     /**
