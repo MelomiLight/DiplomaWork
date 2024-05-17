@@ -15,6 +15,7 @@ class RunningSessionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'=>$this->id,
             'user_id'=>$this->user_id,
             'distance_km'=>$this->distance_km,
             'start_time'=>$this->start_time,

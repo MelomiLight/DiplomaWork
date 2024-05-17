@@ -37,9 +37,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function userPoint(): HasOne
+    public function userPoints(): HasMany
     {
-        return $this->hasOne(UserPoint::class);
+        return $this->hasMany(UserPoint::class);
     }
 
     public function userChallenges(): HasMany

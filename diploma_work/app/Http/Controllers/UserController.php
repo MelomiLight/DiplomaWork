@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    private $service;
-    private $repository;
+    private UserService $service;
+    private UserRepository $repository;
 
     public function __construct(UserRepository $repository, UserService $service)
     {
@@ -35,7 +35,7 @@ class UserController extends Controller
 
     public function show(User $user): UserResource
     {
-        $run_info = new RunInformationResource($user->runInformation());
+        $run_info = new RunInformationResource($user->runInformation);
         return (new UserResource($user))->additional(['run_info' => $run_info]);
     }
 
@@ -44,4 +44,10 @@ class UserController extends Controller
         $users = $this->repository->all();
         return UserResource::collection($users);
     }
+
+    public function destroy(User $user)
+    {
+        return $this->service->remove($user);
+    }
+
 }
