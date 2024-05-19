@@ -22,6 +22,8 @@ class LeaderboardController extends Controller
         } elseif ($value === 'month') {
             $query->whereMonth('earned_date', Carbon::now()->month)
                 ->whereYear('earned_date', Carbon::now()->year);
+        } elseif ($value === 'all') {
+            // No date filter for 'all'
         } else {
             return response()->json(["error" => "invalid value parameter"], 400);
         }
@@ -38,6 +40,9 @@ class LeaderboardController extends Controller
                         $query->select('user_id', 'weekly_distance_km as distance');
                     } elseif ($value === 'month') {
                         $query->select('user_id', 'monthly_distance_km as distance');
+                    } elseif ($value === 'all') {
+                        // Assuming there is a total distance field for all time
+                        $query->select('user_id', 'total_distance_km as distance');
                     }
                 }]);
             }])
@@ -47,7 +52,7 @@ class LeaderboardController extends Controller
         $result = $leaderboard->map(function ($userPoint) {
             return [
                 'total_points' => $userPoint->total_points,
-                'distance' => $userPoint->user->runInformation->distance ?? 0,
+                'total_distance' => (string) ($userPoint->user->runInformation->distance ?? 0),
                 'user' => $userPoint->user,
             ];
         });
