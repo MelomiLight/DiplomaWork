@@ -13,27 +13,45 @@ class LeaderboardController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = UserPoint::query();
+        $value = $request->query('value');
 
-        if ($request->has('day')) {
+        if ($value === 'day') {
             $query->whereDate('earned_date', Carbon::today());
-        }
-
-        if ($request->has('week')) {
+        } elseif ($value === 'week') {
             $query->whereBetween('earned_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
-        }
-
-        if ($request->has('month')) {
+        } elseif ($value === 'month') {
             $query->whereMonth('earned_date', Carbon::now()->month)
                 ->whereYear('earned_date', Carbon::now()->year);
+        } else {
+            return response()->json(["error" => "invalid value parameter"], 400);
         }
 
         // Summarize points per user and order by points earned
         $leaderboard = $query->select('user_id', DB::raw('SUM(earned_points) as total_points'))
             ->groupBy('user_id')
             ->orderByDesc('total_points')
-            ->with('user')  // eager load user
+            ->with(['user' => function ($query) use ($value) {
+                $query->with(['runInformation' => function ($query) use ($value) {
+                    if ($value === 'day') {
+                        $query->select('user_id', 'daily_distance_km as distance');
+                    } elseif ($value === 'week') {
+                        $query->select('user_id', 'weekly_distance_km as distance');
+                    } elseif ($value === 'month') {
+                        $query->select('user_id', 'monthly_distance_km as distance');
+                    }
+                }]);
+            }])
             ->get();
 
-        return response()->json($leaderboard);
+        // Transform the data
+        $result = $leaderboard->map(function ($userPoint) {
+            return [
+                'total_points' => $userPoint->total_points,
+                'distance' => $userPoint->user->runInformation->distance ?? 0,
+                'user' => $userPoint->user,
+            ];
+        });
+
+        return response()->json(['data' => $result]);
     }
 }
