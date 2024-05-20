@@ -24,7 +24,7 @@ class AuthService
             $request->password = Hash::make($request->password);
             $user = User::create($request->all());
         } catch (\Exception) {
-            throw new Exception('Could not create user', 500);
+            throw new Exception(__('messages.create_error', ['attribute' => 'user']), 500);
         }
 
         return $user->createToken('API token of ' . $user->name)->plainTextToken;
@@ -38,7 +38,7 @@ class AuthService
         try {
             $token = $user->createToken('API token of ' . $user->name)->plainTextToken;
         } catch (\Exception $e) {
-            throw new Exception('Could not create token. ' . $e->getMessage(), 500);
+            throw new Exception(__('messages.create_error', ['attribute' => 'token']) . $e->getMessage(), 500);
         }
 
         return $token;
@@ -56,7 +56,7 @@ class AuthService
 
             return $user;
         } catch (\Exception) {
-            throw new Exception('Could not create reset code', 500);
+            throw new Exception(__('messages.create_error', ['attribute' => 'reset code']), 500);
         }
 
     }
@@ -69,7 +69,7 @@ class AuthService
         try {
             Mail::to($user->email)->send(new SendForgotPassword($user->reset_code));
         } catch (\Exception) {
-            throw new Exception('Could not send mail', 500);
+            throw new Exception(__('messages.mail_send_error'), 500);
         }
     }
 
@@ -87,7 +87,7 @@ class AuthService
                 'reset_code' => null,
             ]);
         } catch (\Exception) {
-            throw new Exception('Could not change password', 500);
+            throw new Exception(__('messages.password_change_error'), 500);
         }
     }
 }

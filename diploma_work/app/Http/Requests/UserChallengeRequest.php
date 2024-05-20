@@ -22,8 +22,8 @@ class UserChallengeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
-            'challenge_id' => 'required|exists:challenges,id',
+            'user_id' => ['required', 'exists:users,id'],
+            'challenge_id' => ['required', 'exists:challenges,id'],
         ];
     }
 }

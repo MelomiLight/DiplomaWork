@@ -17,6 +17,7 @@ class ImageService
         try {
             $imageName = $this->saveBase64Image($imageData, $path);
         } catch (Exception $e) {
+            __('message');
             throw new \Exception($e->getMessage());
         }
 

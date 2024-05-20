@@ -26,7 +26,8 @@ class CheckChallengesController extends Controller
     public function setChallenge(Request $request): JsonResponse
     {
         $user = $request->user();
-        $message = false;
+        $status = false;
+        $message = 'messages.challenge_check_error';
         $context = null;
 
         foreach ($user->userChallenges as $userChallenge) {
@@ -36,18 +37,18 @@ class CheckChallengesController extends Controller
                 }
 
                 if ($context) {
-                    $message = $context->checkChallenge($user, $userChallenge);
+                    $status = $context->checkChallenge($user, $userChallenge);
+                    $message = 'messages.challenge_check_success';
                 }
             }
         }
 
-        return response()->json(['message' => $message]);
+        return response()->json([
+            'status' => $status,
+            'message' => __($message)
+        ]);
     }
-//TODO
-//return response()->json([
-//'status' => true,
-//'message' => __('')
-//], 200);
+
 
     public function store(ChallengeRequest $request): ChallengeResource
     {
