@@ -8,6 +8,8 @@ return [
     'password_change_error' => 'Could not change password',
     'challenge_check_success' => 'You have completed challenges!',
     'challenge_check_error' => 'Nothing',
-    'value_error' => 'invalid value parameter'
-
+    'value_error' => 'invalid value parameter',
+    'failed' => 'These credentials do not match our records.',
+    'reset' => 'Your password has been reset.',
+    'sent' => 'We have emailed your password reset link.',
 ];

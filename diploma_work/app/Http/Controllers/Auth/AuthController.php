@@ -42,7 +42,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): UserResource|JsonResponse
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['error' => __('auth.failed')], 401);
+            return response()->json(['error' => __('messages.failed')], 401);
         }
 
         // Retrieve the authenticated user
@@ -61,7 +61,7 @@ class AuthController extends Controller
 
         $this->service->sendMailToUser($user);
 
-        return response()->json(['message' => __('auth.sent')]);
+        return response()->json(['message' => __('messages.sent')]);
     }
 
     /**
@@ -71,7 +71,7 @@ class AuthController extends Controller
     {
         $this->service->changePassword($request);
 
-        return response()->json(['message' => __('auth.reset')]);
+        return response()->json(['message' => __('messages.reset')]);
     }
 
     public function logout(): JsonResponse
