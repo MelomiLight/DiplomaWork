@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\Auth\ChangeRequest;
 use App\Http\Requests\Auth\ForgotRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Jobs\SendMail;
 use App\Mail\SendForgotPassword;
 use App\Models\User;
 use Exception;
@@ -67,7 +68,7 @@ class AuthService
     public function sendMailToUser(User $user): void
     {
         try {
-            Mail::to($user->email)->send(new SendForgotPassword($user->reset_code));
+            SendMail::dispatch($user);
         } catch (\Exception) {
             throw new Exception(__('messages.mail_send_error'), 500);
         }
