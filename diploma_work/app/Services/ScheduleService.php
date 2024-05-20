@@ -15,7 +15,6 @@ class ScheduleService
                 $challenges = DB::table('challenges')->get();
 
                 foreach ($users as $user) {
-                    // Assign 2 daily challenges
                     $dailyChallenges = $challenges->where('due_type', 'daily')->random(2);
                     foreach ($dailyChallenges as $challenge) {
                         DB::table('user_challenges')->insert([
@@ -27,7 +26,6 @@ class ScheduleService
                         ]);
                     }
 
-                    // Assign 2 weekly challenges
                     $weeklyChallenges = $challenges->where('due_type', 'weekly')->random(2);
                     foreach ($weeklyChallenges as $challenge) {
                         DB::table('user_challenges')->insert([
@@ -39,7 +37,7 @@ class ScheduleService
                         ]);
                     }
 
-                    // Assign 2 monthly challenges
+
                     $monthlyChallenges = $challenges->where('due_type', 'monthly')->random(2);
                     foreach ($monthlyChallenges as $challenge) {
                         DB::table('user_challenges')->insert([
@@ -51,7 +49,7 @@ class ScheduleService
                         ]);
                     }
 
-                    // Mark user as initialized
+
                     DB::table('users')->where('id', $user->id)->update(['initialized' => true]);
                 }
             });
@@ -69,7 +67,7 @@ class ScheduleService
                 $challenges = DB::table('challenges')->where('due_type', 'daily')->get();
 
                 foreach ($users as $user) {
-                    // Reassign 2 daily challenges
+
                     $existingDailyChallenges = DB::table('user_challenges')
                         ->join('challenges', 'user_challenges.challenge_id', '=', 'challenges.id')
                         ->where('user_challenges.user_id', $user->id)
@@ -92,7 +90,7 @@ class ScheduleService
                         ]);
                     }
 
-                    // Reset daily run information
+
                     DB::table('run_information')->where('user_id', $user->id)->update([
                         'daily_distance_km' => 0,
                         'daily_time' => '00:00:00',
@@ -115,7 +113,7 @@ class ScheduleService
                 $challenges = DB::table('challenges')->where('due_type', 'weekly')->get();
 
                 foreach ($users as $user) {
-                    // Reassign 2 weekly challenges
+
                     $existingWeeklyChallenges = DB::table('user_challenges')
                         ->join('challenges', 'user_challenges.challenge_id', '=', 'challenges.id')
                         ->where('user_challenges.user_id', $user->id)
@@ -138,7 +136,7 @@ class ScheduleService
                         ]);
                     }
 
-                    // Reset weekly run information
+
                     DB::table('run_information')->where('user_id', $user->id)->update([
                         'weekly_distance_km' => 0,
                         'weekly_time' => '00:00:00',
@@ -161,7 +159,7 @@ class ScheduleService
                 $challenges = DB::table('challenges')->where('due_type', 'monthly')->get();
 
                 foreach ($users as $user) {
-                    // Reassign 2 monthly challenges
+
                     $existingMonthlyChallenges = DB::table('user_challenges')
                         ->join('challenges', 'user_challenges.challenge_id', '=', 'challenges.id')
                         ->where('user_challenges.user_id', $user->id)
@@ -184,7 +182,7 @@ class ScheduleService
                         ]);
                     }
 
-                    // Reset monthly run information
+
                     DB::table('run_information')->where('user_id', $user->id)->update([
                         'monthly_distance_km' => 0,
                         'monthly_time' => '00:00:00',
