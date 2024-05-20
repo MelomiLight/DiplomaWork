@@ -43,7 +43,11 @@ class CheckChallengesController extends Controller
 
         return response()->json(['message' => $message]);
     }
-
+//TODO
+//return response()->json([
+//'status' => true,
+//'message' => __('')
+//], 200);
 
     public function store(ChallengeRequest $request): ChallengeResource
     {

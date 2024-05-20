@@ -12,6 +12,7 @@ class LeaderboardController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        //TODO ----------------------------
         $query = UserPoint::query();
         $value = $request->query('value');
 
