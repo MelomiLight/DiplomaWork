@@ -22,7 +22,7 @@ class ForgotRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|string|email|exists:users|max:255',
+            'email' => ['required', 'string', 'email', 'max:255', 'exists:users,email'],
         ];
     }
 }

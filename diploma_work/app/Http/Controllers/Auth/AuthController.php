@@ -42,7 +42,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): UserResource|JsonResponse
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['error' => 'The provided credentials are incorrect.'], 401);
+            return response()->json(['error' => __('auth.failed')], 401);
         }
 
         // Retrieve the authenticated user
@@ -61,7 +61,7 @@ class AuthController extends Controller
 
         $this->service->sendMailToUser($user);
 
-        return response()->json(['message' => 'Password reset email sent successfully']);
+        return response()->json(['message' => __('auth.sent')]);
     }
 
     /**
@@ -71,7 +71,7 @@ class AuthController extends Controller
     {
         $this->service->changePassword($request);
 
-        return response()->json(['message' => 'password successfully changed!']);
+        return response()->json(['message' => __('auth.reset')]);
     }
 
     public function logout(): JsonResponse
@@ -83,6 +83,6 @@ class AuthController extends Controller
             return response()->json(['error' => $exception->getMessage()], $exception->getCode());
         }
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => __('messages.logout_success')]);
     }
 }

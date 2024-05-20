@@ -22,13 +22,13 @@ class ChallengeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'due_type' => 'required|string|in:daily,weekly,monthly',
-            'challenge_type' => 'required|string|in:distanceChallenge',
-            'is_active' => 'boolean',
-            'points' => 'required|integer',
-            'distance_km' => 'nullable|numeric|min:0',
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'due_type' => ['required', 'string', 'in:daily,weekly,monthly'],
+            'challenge_type' => ['required', 'string', 'in:distanceChallenge'],
+            'is_active' => ['boolean'],
+            'points' => ['required', 'integer'],
+            'distance_km' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }
