@@ -27,7 +27,6 @@ class CheckChallengesController extends Controller
     {
         $user = $request->user();
         $status = false;
-        $message = 'messages.challenge_check_error';
         $context = null;
 
         foreach ($user->userChallenges as $userChallenge) {
@@ -38,10 +37,10 @@ class CheckChallengesController extends Controller
 
                 if ($context) {
                     $status = $context->checkChallenge($user, $userChallenge);
-                    $message = 'messages.challenge_check_success';
                 }
             }
         }
+        $message = $status ? 'messages.challenge_check_success' : 'messages.challenge_check_error';
 
         return response()->json([
             'status' => $status,
