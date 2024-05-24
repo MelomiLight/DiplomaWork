@@ -7,14 +7,11 @@ use App\Http\Requests\Auth\ChangeRequest;
 use App\Http\Requests\Auth\ForgotRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Resources\RunInformationResource;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -26,7 +23,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Get a JWT via given credentials.
+     * Register a new user and get a JWT.
      *
      * @param RegisterRequest $request
      * @return JsonResponse
@@ -34,16 +31,14 @@ class AuthController extends Controller
      * @throws Exception
      * @OA\Post(
      *      path="/api/register",
-     *      summary="Регистрация",
-     *      tags={"Авторизация"},
-     *
+     *      summary="Registration",
+     *      tags={"Authorization"},
      *      @OA\Parameter(
      *          name="Accept",
      *          in="header",
      *          required=true,
      *          example="application/json"
      *      ),
-     *
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -53,10 +48,9 @@ class AuthController extends Controller
      *              @OA\Property(property="password", type="string", example="12345678"),
      *          )
      *      ),
-     *
      *      @OA\Response(
-     *          response=200,
-     *          description="OK",
+     *          response=201,
+     *          description="Created",
      *          @OA\JsonContent(
      *              @OA\Property(property="token", type="string", example="your_token"),
      *          ),
@@ -74,9 +68,8 @@ class AuthController extends Controller
         return response()->json(['token' => $token], 201);
     }
 
-
     /**
-     * Get a JWT via given credentials.
+     * Log in a user and get a JWT.
      *
      * @param LoginRequest $request
      * @return UserResource|JsonResponse
@@ -84,16 +77,14 @@ class AuthController extends Controller
      * @throws Exception
      * @OA\Post(
      *      path="/api/login",
-     *      summary="Логин",
-     *      tags={"Авторизация"},
-     *
+     *      summary="Login",
+     *      tags={"Authorization"},
      *      @OA\Parameter(
      *          name="Accept",
      *          in="header",
      *          required=true,
      *          example="application/json"
      *      ),
-     *
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -102,12 +93,11 @@ class AuthController extends Controller
      *              @OA\Property(property="password", type="string", example="12345678"),
      *          )
      *      ),
-     *
      *      @OA\Response(
      *          response=200,
      *          description="OK",
      *          @OA\JsonContent(
-     *              @OA\Property(property="data", type="array", @OA\Items(type="string", example="user_info"))),
+     *              @OA\Property(property="data", type="object", ref="#/components/schemas/UserResource"),
      *              @OA\Property(property="token", type="string", example="your_token"),
      *          ),
      *      ),
@@ -118,7 +108,7 @@ class AuthController extends Controller
      *      @OA\Response(
      *          response=500,
      *          description="Could not create token"
-     *       ),
+     *      ),
      * )
      */
     public function login(LoginRequest $request): UserResource|JsonResponse
@@ -135,6 +125,7 @@ class AuthController extends Controller
     }
 
     /**
+     * Handle forgot password request.
      *
      * @param ForgotRequest $request
      * @return JsonResponse
@@ -142,16 +133,14 @@ class AuthController extends Controller
      * @throws Exception
      * @OA\Post(
      *      path="/api/forgot",
-     *      summary="Забыл пароль",
-     *      tags={"Авторизация"},
-     *
+     *      summary="Forgot password",
+     *      tags={"Authorization"},
      *      @OA\Parameter(
      *          name="Accept",
      *          in="header",
      *          required=true,
      *          example="application/json"
      *      ),
-     *
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -159,7 +148,6 @@ class AuthController extends Controller
      *              @OA\Property(property="email", type="string", example="user230@crocos.kz"),
      *          )
      *      ),
-     *
      *      @OA\Response(
      *          response=200,
      *          description="We have emailed your password reset link.",
@@ -167,7 +155,7 @@ class AuthController extends Controller
      *      @OA\Response(
      *          response=500,
      *          description="Could not send mail or could not create reset code"
-     *       ),
+     *      ),
      * )
      */
     public function forgotPassword(ForgotRequest $request): JsonResponse
@@ -180,6 +168,7 @@ class AuthController extends Controller
     }
 
     /**
+     * Reset user password.
      *
      * @param ChangeRequest $request
      * @return JsonResponse
@@ -187,16 +176,14 @@ class AuthController extends Controller
      * @throws Exception
      * @OA\Post(
      *      path="/api/password/reset",
-     *      summary="Поменять пароль",
-     *      tags={"Авторизация"},
-     *
+     *      summary="Reset password",
+     *      tags={"Authorization"},
      *      @OA\Parameter(
      *          name="Accept",
      *          in="header",
      *          required=true,
      *          example="application/json"
      *      ),
-     *
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -206,7 +193,6 @@ class AuthController extends Controller
      *              @OA\Property(property="reset_code", type="string", example="f28adw"),
      *          )
      *      ),
-     *
      *      @OA\Response(
      *          response=200,
      *          description="Your password has been reset.",
@@ -214,7 +200,7 @@ class AuthController extends Controller
      *      @OA\Response(
      *          response=500,
      *          description="Could not change password"
-     *       ),
+     *      ),
      * )
      */
     public function changePassword(ChangeRequest $request): JsonResponse
@@ -225,36 +211,34 @@ class AuthController extends Controller
     }
 
     /**
+     * Log out the authenticated user.
      *
      * @return JsonResponse
      *
      * @OA\Post(
      *      path="/api/logout",
-     *      summary="Поменять пароль",
-     *      tags={"Авторизация"},
-     *
+     *      summary="Logout",
+     *      tags={"Authorization"},
      *      @OA\Parameter(
      *          name="Accept",
      *          in="header",
      *          required=true,
      *          example="application/json"
      *      ),
-     *       @OA\Parameter(
+     *      @OA\Parameter(
      *          name="Authorization",
      *          in="header",
      *          required=true,
      *          example="Bearer your_token"
-     *       ),
-     *
-     *
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Successfully logged out",
      *      ),
      *      @OA\Response(
      *          response=404,
-     *          description="error message"
-     *       ),
+     *          description="Error message"
+     *      ),
      * )
      */
     public function logout(): JsonResponse

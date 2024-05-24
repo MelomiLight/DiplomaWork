@@ -9,10 +9,10 @@
         "/api/register": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Authorization"
                 ],
-                "summary": "Регистрация",
-                "description": "Get a JWT via given credentials.",
+                "summary": "Registration",
+                "description": "Register a new user and get a JWT.",
                 "operationId": "ca7c0cb6772de9bffbb8c896980cebc8",
                 "parameters": [
                     {
@@ -52,8 +52,8 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -77,10 +77,10 @@
         "/api/login": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Authorization"
                 ],
-                "summary": "Логин",
-                "description": "Get a JWT via given credentials.",
+                "summary": "Login",
+                "description": "Log in a user and get a JWT.",
                 "operationId": "c373bc4cffa4a56fc64e3979b8ee7b96",
                 "parameters": [
                     {
@@ -122,17 +122,23 @@
                                 "schema": {
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string",
-                                                "example": "user_info"
-                                            }
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "your_token"
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "These credentials do not match our records."
+                    },
+                    "500": {
+                        "description": "Could not create token"
                     }
                 }
             }
@@ -140,9 +146,10 @@
         "/api/forgot": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Authorization"
                 ],
-                "summary": "Забыл пароль",
+                "summary": "Forgot password",
+                "description": "Handle forgot password request.",
                 "operationId": "ea1a70c23193e0d3eb9113fcba2e1575",
                 "parameters": [
                     {
@@ -184,9 +191,10 @@
         "/api/password/reset": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Authorization"
                 ],
-                "summary": "Поменять пароль",
+                "summary": "Reset password",
+                "description": "Reset user password.",
                 "operationId": "f3732be9b471fb1d0f6149c860ae5356",
                 "parameters": [
                     {
@@ -238,9 +246,10 @@
         "/api/logout": {
             "post": {
                 "tags": [
-                    "Авторизация"
+                    "Authorization"
                 ],
-                "summary": "Поменять пароль",
+                "summary": "Logout",
+                "description": "Log out the authenticated user.",
                 "operationId": "5ff2dc8b48bff52908d3821a0ecc9b3e",
                 "parameters": [
                     {
@@ -261,19 +270,1039 @@
                         "description": "Successfully logged out"
                     },
                     "404": {
-                        "description": "error message"
+                        "description": "Error message"
+                    }
+                }
+            }
+        },
+        "/api/challenges/check": {
+            "get": {
+                "tags": [
+                    "Challenges"
+                ],
+                "summary": "Check and set challenges",
+                "description": "Check and set challenges for the authenticated user.",
+                "operationId": "0ede76bcc490d432f6124596953405d0",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You have completed challenges!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/challenges/store": {
+            "post": {
+                "tags": [
+                    "Challenges"
+                ],
+                "summary": "Store a new challenge",
+                "description": "Store a new challenge.",
+                "operationId": "8ccd4977da1f82fac2c82826582082dd",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChallengeResource"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChallengeResource"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/challenges/index": {
+            "get": {
+                "tags": [
+                    "Challenges"
+                ],
+                "summary": "Get a list of challenges",
+                "description": "Get a list of challenges.",
+                "operationId": "27ee13c19c23e4d62b19c371cd600e86",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ChallengeResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/challenges/delete/{challenge}": {
+            "delete": {
+                "tags": [
+                    "Challenges"
+                ],
+                "summary": "Delete a challenge",
+                "description": "Delete a challenge.",
+                "operationId": "eb45b773b9b8954e31cedee74fc3dc21",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    },
+                    {
+                        "name": "challenge",
+                        "in": "path",
+                        "description": "ID of the challenge to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Challenge deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Challenge not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/leaderboard": {
+            "get": {
+                "tags": [
+                    "Leaderboard"
+                ],
+                "summary": "Get the leaderboard",
+                "description": "Get the leaderboard based on the specified time period.",
+                "operationId": "5be6c0e619a9d018e732ec7fe5644cf1",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    },
+                    {
+                        "name": "value",
+                        "in": "query",
+                        "description": "Time period for leaderboard",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "day",
+                                "week",
+                                "month",
+                                "all"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "total_points": {
+                                                "type": "integer",
+                                                "example": 150
+                                            },
+                                            "total_distance": {
+                                                "type": "string",
+                                                "example": "20.5"
+                                            },
+                                            "user": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid value parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "invalid value parameter"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/run/session/index": {
+            "get": {
+                "tags": [
+                    "Running Sessions"
+                ],
+                "summary": "Get running sessions",
+                "description": "Get a list of running sessions for the authenticated user.",
+                "operationId": "616196d11b6c77289758fdc3ca993de6",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RunningSessionResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/run/session/store": {
+            "post": {
+                "tags": [
+                    "Running Sessions"
+                ],
+                "summary": "Store a new running session",
+                "description": "Store a new running session.",
+                "operationId": "afb136cddcc31f036887a16481cea377",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RunningSessionResource"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RunningSessionResource"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/run/session/delete/{runningSession}": {
+            "delete": {
+                "tags": [
+                    "Running Sessions"
+                ],
+                "summary": "Delete a running session",
+                "description": "Delete a running session.",
+                "operationId": "c66fae70204894fdfb66cea2bbca6447",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    },
+                    {
+                        "name": "runningSession",
+                        "in": "path",
+                        "description": "ID of the running session to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Running session deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Running session not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/challenges/store": {
+            "post": {
+                "tags": [
+                    "User Challenges"
+                ],
+                "summary": "Store a new user challenge",
+                "description": "Store a new user challenge.",
+                "operationId": "2b65eebf77f6ffdb0730cb0c770d7b5e",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserChallengeResource"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserChallengeResource"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/challenges/show/{user}": {
+            "get": {
+                "tags": [
+                    "User Challenges"
+                ],
+                "summary": "Show user challenges",
+                "description": "Show the challenges for a specific user.",
+                "operationId": "1554eec7ab6028cb50afa3aac81f89c3",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    },
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID of the user to show challenges for",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "daily": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserChallengeResource"
+                                            }
+                                        },
+                                        "weekly": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserChallengeResource"
+                                            }
+                                        },
+                                        "monthly": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserChallengeResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/challenges/delete/{user}": {
+            "delete": {
+                "tags": [
+                    "User Challenges"
+                ],
+                "summary": "Delete user challenges",
+                "description": "Remove challenges for a specific user.",
+                "operationId": "1d8282fba1e5c4ee9a3d25e974a78880",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    },
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID of the user whose challenges will be deleted",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User challenges deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/update": {
+            "patch": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update user information",
+                "description": "Update the authenticated user's information.",
+                "operationId": "409b26ebbd6fa8b5b5118e67d9c715cb",
+                "parameters": [
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "required": true,
+                        "example": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "example": "Bearer your_token"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "profile_picture": {
+                                        "type": "string",
+                                        "example": "base64 encoded string"
+                                    },
+                                    "weight_kg": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 70.5
+                                    },
+                                    "height_cm": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 175
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/show/{user}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user information",
+                "description": "Display the specified user information.",
+                "operationId": "266577b79f8ef34ecc38e886cd24c540",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        "run_info": {
+                                            "$ref": "#/components/schemas/RunInformationResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/index": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get list of users",
+                "description": "Display a listing of the users.",
+                "operationId": "0fa915002c81b50c00f91f5be24957c6",
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/delete/{user}": {
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete user",
+                "description": "Remove the specified user from storage.",
+                "operationId": "e5d215b10e23cedacd2237dc04bd2274",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID of the user to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
         }
     },
     "components": {
-        "responses": {
-            "401": {
-                "description": "These credentials do not match our records."
+        "schemas": {
+            "ChallengeResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "10k Run Challenge"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Complete a 10km run within a month."
+                    },
+                    "due_type": {
+                        "type": "string",
+                        "example": "monthly"
+                    },
+                    "challenge_type": {
+                        "type": "string",
+                        "example": "distanceChallenge"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "points": {
+                        "type": "integer",
+                        "example": 100
+                    }
+                },
+                "type": "object"
             },
-            "500": {
-                "description": "Could not create token"
+            "RunInformationResource": {
+                "properties": {
+                    "daily": {
+                        "properties": {
+                            "daily_distance_km": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 5.5
+                            },
+                            "daily_time": {
+                                "type": "string",
+                                "example": "01:30:00"
+                            },
+                            "daily_calories_burned": {
+                                "type": "integer",
+                                "example": 300
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "weekly": {
+                        "properties": {
+                            "weekly_distance_km": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 20
+                            },
+                            "weekly_time": {
+                                "type": "string",
+                                "example": "05:00:00"
+                            },
+                            "weekly_calories_burned": {
+                                "type": "integer",
+                                "example": 1200
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "monthly": {
+                        "properties": {
+                            "monthly_distance_km": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 80
+                            },
+                            "monthly_time": {
+                                "type": "string",
+                                "example": "20:00:00"
+                            },
+                            "monthly_calories_burned": {
+                                "type": "integer",
+                                "example": 4800
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "total": {
+                        "properties": {
+                            "total_distance_km": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 200
+                            },
+                            "total_time": {
+                                "type": "string",
+                                "example": "50:00:00"
+                            },
+                            "total_calories_burned": {
+                                "type": "integer",
+                                "example": 12000
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "RunningSessionResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "distance_km": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 5.5
+                    },
+                    "start_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-24T14:00:00Z"
+                    },
+                    "end_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-24T14:30:00Z"
+                    },
+                    "total_time": {
+                        "type": "integer",
+                        "example": 1800
+                    },
+                    "average_speed": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 10.5
+                    },
+                    "max_speed": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5
+                    },
+                    "calories_burned": {
+                        "type": "integer",
+                        "example": 300
+                    },
+                    "points": {
+                        "type": "integer",
+                        "example": 50
+                    }
+                },
+                "type": "object"
+            },
+            "UserChallengeResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "challenge": {
+                        "$ref": "#/components/schemas/ChallengeResource"
+                    },
+                    "challenge_status": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "test"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "example@example.com"
+                    },
+                    "profile_picture": {
+                        "type": "string",
+                        "example": "profile_pictures/adagasf21412tgweg"
+                    },
+                    "weight_kg": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 62.5
+                    },
+                    "height_cm": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 181
+                    },
+                    "points": {
+                        "type": "integer",
+                        "example": 50
+                    },
+                    "running_sessions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RunningSessionResource"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-24T14:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-24T14:00:00Z"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {

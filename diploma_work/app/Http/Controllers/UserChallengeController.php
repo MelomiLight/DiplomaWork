@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserChallengeRequest;
-use App\Http\Resources\ChallengeResource;
 use App\Http\Resources\UserChallengeResource;
 use App\Models\User;
-use App\Repositories\UserChallengeRepository;
 use App\Services\UserChallengeService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserChallengeController extends Controller
 {
@@ -20,18 +17,107 @@ class UserChallengeController extends Controller
         $this->service = $challengeService;
     }
 
+    /**
+     * Store a new user challenge.
+     *
+     * @param UserChallengeRequest $request
+     * @return JsonResponse
+     *
+     * @OA\Post(
+     *      path="/api/user/challenges/store",
+     *      summary="Store a new user challenge",
+     *      tags={"User Challenges"},
+     *      @OA\Parameter(
+     *          name="Accept",
+     *          in="header",
+     *          required=true,
+     *          example="application/json"
+     *      ),
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          required=true,
+     *          example="Bearer your_token"
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/UserChallengeResource")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Created",
+     *          @OA\JsonContent(ref="#/components/schemas/UserChallengeResource")
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error"
+     *      )
+     * )
+     */
     public function store(UserChallengeRequest $request): JsonResponse
     {
         $userChallenge = $this->service->create($request);
 
-        return response()->json($userChallenge);
+        return response()->json($userChallenge, 201);
     }
 
+    /**
+     * Show the challenges for a specific user.
+     *
+     * @param User $user
+     * @return JsonResponse
+     *
+     * @OA\Get(
+     *      path="/api/user/challenges/show/{user}",
+     *      summary="Show user challenges",
+     *      tags={"User Challenges"},
+     *      @OA\Parameter(
+     *          name="Accept",
+     *          in="header",
+     *          required=true,
+     *          example="application/json"
+     *      ),
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          required=true,
+     *          example="Bearer your_token"
+     *      ),
+     *      @OA\Parameter(
+     *          name="user",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(type="integer"),
+     *          description="ID of the user to show challenges for"
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="OK",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="daily", type="array", @OA\Items(ref="#/components/schemas/UserChallengeResource")),
+     *              @OA\Property(property="weekly", type="array", @OA\Items(ref="#/components/schemas/UserChallengeResource")),
+     *              @OA\Property(property="monthly", type="array", @OA\Items(ref="#/components/schemas/UserChallengeResource"))
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Not Found"
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error"
+     *      )
+     * )
+     */
     public function show(User $user): JsonResponse
     {
         $userChallenges = $user->userChallenges;
 
-        $groupedChallenges = $userChallenges->groupBy(function($item) {
+        $groupedChallenges = $userChallenges->groupBy(function ($item) {
             return $item->challenge->due_type;
         });
 
@@ -44,8 +130,55 @@ class UserChallengeController extends Controller
         return response()->json($response);
     }
 
-    public function destroy(User $user): void
+    /**
+     * Remove challenges for a specific user.
+     *
+     * @param User $user
+     * @return JsonResponse
+     *
+     * @OA\Delete(
+     *      path="/api/user/challenges/delete/{user}",
+     *      summary="Delete user challenges",
+     *      tags={"User Challenges"},
+     *      @OA\Parameter(
+     *          name="Accept",
+     *          in="header",
+     *          required=true,
+     *          example="application/json"
+     *      ),
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          required=true,
+     *          example="Bearer your_token"
+     *      ),
+     *      @OA\Parameter(
+     *          name="user",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(type="integer"),
+     *          description="ID of the user whose challenges will be deleted"
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Deleted",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="User challenges deleted successfully.")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Not Found"
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error"
+     *      )
+     * )
+     */
+    public function destroy(User $user): JsonResponse
     {
         $this->service->remove($user);
+        return response()->json(['message' => 'User challenges deleted successfully.']);
     }
 }

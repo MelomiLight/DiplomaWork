@@ -8,6 +8,60 @@ use App\Models\UserPoint;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Get the leaderboard based on the specified time period.
+ *
+ * @param Request $request
+ * @return JsonResponse
+ *
+ * @OA\Get(
+ *      path="/api/leaderboard",
+ *      summary="Get the leaderboard",
+ *      tags={"Leaderboard"},
+ *      @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          example="application/json"
+ *      ),
+ *      @OA\Parameter(
+ *          name="Authorization",
+ *          in="header",
+ *          required=true,
+ *          example="Bearer your_token"
+ *      ),
+ *      @OA\Parameter(
+ *          name="value",
+ *          in="query",
+ *          required=true,
+ *          @OA\Schema(type="string", enum={"day", "week", "month", "all"}),
+ *          description="Time period for leaderboard"
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="OK",
+ *          @OA\JsonContent(
+ *              type="array",
+ *              @OA\Items(
+ *                  @OA\Property(property="total_points", type="integer", example=150),
+ *                  @OA\Property(property="total_distance", type="string", example="20.5"),
+ *                  @OA\Property(property="user", ref="#/components/schemas/UserResource")
+ *              )
+ *          )
+ *      ),
+ *      @OA\Response(
+ *          response=400,
+ *          description="Invalid value parameter",
+ *          @OA\JsonContent(
+ *              @OA\Property(property="error", type="string", example="invalid value parameter")
+ *          )
+ *      ),
+ *      @OA\Response(
+ *          response=500,
+ *          description="Internal Server Error"
+ *      )
+ * )
+ */
 class LeaderboardController extends Controller
 {
     public function index(Request $request): JsonResponse

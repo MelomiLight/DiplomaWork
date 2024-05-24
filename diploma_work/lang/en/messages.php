@@ -1,9 +1,9 @@
 <?php
 
 return [
-
     'logout_success' => 'Successfully logged out',
     'create_error' => 'Could not create :attribute',
+    'delete_success' => ':attribute deleted successfully.',
     'mail_send_error' => 'Could not send mail',
     'password_change_error' => 'Could not change password',
     'challenge_check_success' => 'You have completed challenges!',
