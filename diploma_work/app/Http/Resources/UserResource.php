@@ -2,12 +2,8 @@
 
 namespace App\Http\Resources;
 
-use App\Models\RunningSession;
-use App\Services\ImageService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Nette\Utils\Image;
 
 class UserResource extends JsonResource
 {
@@ -19,35 +15,22 @@ class UserResource extends JsonResource
     }
 
     /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     * @throws Exception
+     * @OA\Schema(
+     *      schema="UserResource",
+     *      @OA\Property(property="id", type="integer", example=1),
+     *      @OA\Property(property="name", type="string", example="test"),
+     *      @OA\Property(property="email", type="string", example="example@example.com"),
+     *      @OA\Property(property="profile_picture", type="string", example="profile_pictures/adagasf21412tgweg"),
+     *      @OA\Property(property="weight_kg", type="float", example=62.5),
+     *      @OA\Property(property="height_cm", type="float", example=181),
+     *      @OA\Property(property="points", type="integer", example=50),
+     *      @OA\Property(property="running_sessions", type="array", @OA\Items(ref="#/components/schemas/RunningSessionResource")),
+     *      @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-24T14:00:00Z"),
+     *      @OA\Property(property="updated_at", type="string", format="date-time", example="2024-05-24T14:00:00Z")
+     * )
      */
     public function toArray(Request $request): array
     {
-//        // Initialize arrays to hold categorized challenges
-//        $dailyChallenges = [];
-//        $weeklyChallenges = [];
-//        $monthlyChallenges = [];
-//
-//        // Categorize challenges based on due_type
-//        foreach ($this->userChallenges as $userChallenge) {
-//            $challenge = $userChallenge->challenge;
-//            if ($challenge) {
-//                switch ($challenge->due_type) {
-//                    case 'daily':
-//                        $dailyChallenges[] = new ChallengeResource($challenge);
-//                        break;
-//                    case 'weekly':
-//                        $weeklyChallenges[] = new ChallengeResource($challenge);
-//                        break;
-//                    case 'monthly':
-//                        $monthlyChallenges[] = new ChallengeResource($challenge);
-//                        break;
-//                }
-//            }
-//
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -56,12 +39,7 @@ class UserResource extends JsonResource
             'weight_kg' => $this->weight_kg,
             'height_cm' => $this->height_cm,
             'points' => $this->points,
-//            'challenges' => [
-//                'daily' => $dailyChallenges,
-//                'weekly' => $weeklyChallenges,
-//                'monthly' => $monthlyChallenges,
-//            ],
-            'running_sessions'=>RunningSessionResource::collection($this->runningSessions),
+            'running_sessions' => RunningSessionResource::collection($this->runningSessions),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
