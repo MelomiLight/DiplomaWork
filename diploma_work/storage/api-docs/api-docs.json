@@ -749,14 +749,14 @@
                 }
             }
         },
-        "/api/user/challenges/show/{user}": {
+        "/api/user/challenges/show": {
             "get": {
                 "tags": [
                     "User Challenges"
                 ],
                 "summary": "Show user challenges",
                 "description": "Show the challenges for a specific user.",
-                "operationId": "1554eec7ab6028cb50afa3aac81f89c3",
+                "operationId": "9eb3e7ca3bcab67f566f748c7e92b7ef",
                 "parameters": [
                     {
                         "name": "Accept",
@@ -769,15 +769,6 @@
                         "in": "header",
                         "required": true,
                         "example": "Bearer your_token"
-                    },
-                    {
-                        "name": "user",
-                        "in": "path",
-                        "description": "ID of the user to show challenges for",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
                     }
                 ],
                 "responses": {
@@ -840,15 +831,6 @@
                         "in": "header",
                         "required": true,
                         "example": "Bearer your_token"
-                    },
-                    {
-                        "name": "user",
-                        "in": "path",
-                        "description": "ID of the user whose challenges will be deleted",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
                     }
                 ],
                 "responses": {

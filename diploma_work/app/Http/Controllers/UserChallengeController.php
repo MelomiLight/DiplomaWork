@@ -6,6 +6,7 @@ use App\Http\Requests\UserChallengeRequest;
 use App\Http\Resources\UserChallengeResource;
 use App\Models\User;
 use App\Services\UserChallengeService;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class UserChallengeController extends Controller
@@ -68,11 +69,11 @@ class UserChallengeController extends Controller
     /**
      * Show the challenges for a specific user.
      *
-     * @param User $user
+     * @param Request $request
      * @return JsonResponse
      *
      * @OA\Get(
-     *      path="/api/user/challenges/show/{user}",
+     *      path="/api/user/challenges/show",
      *      summary="Show user challenges",
      *      tags={"User Challenges"},
      *      @OA\Parameter(
@@ -86,13 +87,6 @@ class UserChallengeController extends Controller
      *          in="header",
      *          required=true,
      *          example="Bearer your_token"
-     *      ),
-     *      @OA\Parameter(
-     *          name="user",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(type="integer"),
-     *          description="ID of the user to show challenges for"
      *      ),
      *      @OA\Response(
      *          response=200,
@@ -113,9 +107,9 @@ class UserChallengeController extends Controller
      *      )
      * )
      */
-    public function show(User $user): JsonResponse
+    public function show(Request $request): JsonResponse
     {
-        $userChallenges = $user->userChallenges;
+        $userChallenges = $request->user()->userChallenges;
 
         $groupedChallenges = $userChallenges->groupBy(function ($item) {
             return $item->challenge->due_type;
@@ -133,7 +127,7 @@ class UserChallengeController extends Controller
     /**
      * Remove challenges for a specific user.
      *
-     * @param User $user
+     * @param Request $request
      * @return JsonResponse
      *
      * @OA\Delete(
@@ -152,13 +146,6 @@ class UserChallengeController extends Controller
      *          required=true,
      *          example="Bearer your_token"
      *      ),
-     *      @OA\Parameter(
-     *          name="user",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(type="integer"),
-     *          description="ID of the user whose challenges will be deleted"
-     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Deleted",
@@ -176,9 +163,9 @@ class UserChallengeController extends Controller
      *      )
      * )
      */
-    public function destroy(User $user): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
-        $this->service->remove($user);
+        $this->service->remove($request->user());
         return response()->json(['message' => 'User challenges deleted successfully.']);
     }
 }
