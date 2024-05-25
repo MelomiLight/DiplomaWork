@@ -22,15 +22,14 @@ class RunningSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['nullable', 'exists:users,id'],
             'distance_km' => ['nullable', 'numeric', 'min:0'],
             'start_time' => ['nullable', 'date'],
             'end_time' => ['nullable', 'date', 'after_or_equal:start_time'],
             'total_time' => ['nullable', 'date_format:H:i:s'],
             'average_speed' => ['nullable', 'numeric', 'min:0'],
-            'max_speed' => ['nullable', 'numeric|min:0'],
+            'max_speed' => ['nullable', 'numeric', 'min:0'],
             'calories_burned' => ['nullable', 'numeric', 'min:0'],
-            'points' => ['nullable', 'integer|min:0'],
+            'points' => ['nullable', 'integer', 'min:0'],
         ];
     }
 }

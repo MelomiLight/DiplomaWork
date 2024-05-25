@@ -58,6 +58,9 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
                                         "token": {
                                             "type": "string",
                                             "example": "your_token"

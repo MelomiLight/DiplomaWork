@@ -19,16 +19,21 @@ class AuthService
     /**
      * @throws Exception
      */
-    public function createUser(RegisterRequest $request)
+    public function createUser(RegisterRequest $request): array
     {
+        $response = [];
         try {
             $request->password = Hash::make($request->password);
             $user = User::create($request->all());
+            $token = $user->createToken('API token of ' . $user->name)->plainTextToken;
         } catch (\Exception) {
             throw new Exception(__('messages.create_error', ['attribute' => 'user']), 500);
         }
 
-        return $user->createToken('API token of ' . $user->name)->plainTextToken;
+        $response['user'] = $user;
+        $response['token'] = $token;
+
+        return $response;
     }
 
     /**
@@ -80,8 +85,7 @@ class AuthService
     public function changePassword(ChangeRequest $request): void
     {
         try {
-            $request->password = Hash::make($request->password);
-
+            $request->merge(['password' => Hash::make($request->password)]);
             $user = User::where('email', $request->email)->first();
             $user->update([
                 'password' => $request->password,
