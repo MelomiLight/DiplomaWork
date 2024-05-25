@@ -15,8 +15,10 @@ class RunningSessionService
 {
     public function create(RunningSessionRequest $request)
     {
+        $request->merge(['user_id' => $request->user()->id]);
+
         return DB::transaction(function () use ($request) {
-            return RunningSession::create($request->validated());
+            return RunningSession::create($request->all());
         });
     }
 

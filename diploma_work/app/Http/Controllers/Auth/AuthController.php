@@ -26,7 +26,7 @@ class AuthController extends Controller
      * Register a new user and get a JWT.
      *
      * @param RegisterRequest $request
-     * @return JsonResponse
+     * @return UserResource
      *
      * @throws Exception
      * @OA\Post(
@@ -52,8 +52,9 @@ class AuthController extends Controller
      *          response=201,
      *          description="Created",
      *          @OA\JsonContent(
+     *              @OA\Property(property="data", type="object", ref="#/components/schemas/UserResource"),
      *              @OA\Property(property="token", type="string", example="your_token"),
-     *          ),
+     *        ),
      *      ),
      *      @OA\Response(
      *         response=500,
@@ -61,11 +62,11 @@ class AuthController extends Controller
      *      ),
      * )
      */
-    public function register(RegisterRequest $request): JsonResponse
+    public function register(RegisterRequest $request): UserResource
     {
-        $token = $this->service->createUser($request);
+        $response = $this->service->createUser($request);
 
-        return response()->json(['token' => $token], 201);
+        return (new UserResource($response['user']))->additional(['token' => $response['token']]);
     }
 
     /**
