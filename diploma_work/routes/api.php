@@ -36,8 +36,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::prefix('/challenges')->group(function () {
             Route::post('/store', [UserChallengeController::class, 'store']);
-            Route::get('/show/{user}', [UserChallengeController::class, 'show']);
-            Route::delete('/delete/{user}', [UserChallengeController::class, 'destroy']);
+            Route::get('/show', [UserChallengeController::class, 'show']);
+            Route::delete('/delete', [UserChallengeController::class, 'destroy']);
         });
 
     });
