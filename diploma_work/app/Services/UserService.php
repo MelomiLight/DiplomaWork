@@ -25,7 +25,7 @@ class UserService
     {
         $validatedData = $request->validated();
 
-        if (isset($validatedData['profile_picture'])) {
+        if ($request->file('profile_picture')) {
             if ($user->profile_picture && Storage::exists($user->profile_picture)) {
                 Storage::delete($user->profile_picture);
             }
