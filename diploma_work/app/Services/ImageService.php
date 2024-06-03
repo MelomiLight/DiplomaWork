@@ -16,8 +16,7 @@ class ImageService
     {
         $image = $request->file('profile_picture');
 
-        $imageName = time() . '.' . $image->extension();
-
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
         $image->storeAs($path, $imageName);
 
         return $path . '/' . $imageName;

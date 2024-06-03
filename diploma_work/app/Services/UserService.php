@@ -23,18 +23,23 @@ class UserService
      */
     public function update(UserRequest $request, Authenticatable $user)
     {
-         $validatedData = $request->validated();
-        if(isset($validatedData['profile_picture'])){
-            Storage::delete($user->profile_picture);
-            $profilePicturePath = $this->service->store($request, 'profile_pictures');
+        $validatedData = $request->validated();
 
+        if (isset($validatedData['profile_picture'])) {
+            if ($user->profile_picture && Storage::exists($user->profile_picture)) {
+                Storage::delete($user->profile_picture);
+            }
+
+            $profilePicturePath = $this->service->store($request, 'profile_pictures');
             $validatedData['profile_picture'] = $profilePicturePath;
         }
 
         return DB::transaction(function () use ($validatedData, $user) {
-            return $user->update($validatedData);
+            $user->update($validatedData);
+            return $user;
         });
     }
+
 
     public function remove(User $user)
     {
