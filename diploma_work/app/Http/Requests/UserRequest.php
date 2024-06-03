@@ -24,11 +24,11 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users', 'bail'],
-            'profile_picture' => ['nullable', 'sometimes', new Base64Image(2048, ['jpeg', 'png', 'jpg'])],
-            'weight_kg' => ['sometimes', 'numeric', 'between:0,500'],
-            'height_cm' => ['sometimes', 'numeric', 'between:0,300'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users', 'bail'],
+            'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'weight_kg' => ['nullable', 'numeric', 'between:0,500'],
+            'height_cm' => ['nullable', 'numeric', 'between:0,300'],
         ];
     }
 }

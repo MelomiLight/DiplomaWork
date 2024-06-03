@@ -7,6 +7,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UserService
 {
@@ -22,14 +23,14 @@ class UserService
      */
     public function update(UserRequest $request, Authenticatable $user)
     {
-        $validatedData = $request->validated();
-        if($validatedData['profile_picture']??null){
-            // Store the base64 image and get the path
-            $profilePicturePath = $this->service->store($validatedData['profile_picture'], 'profile_pictures');
+         $validatedData = $request->validated();
+        if(isset($validatedData['profile_picture'])){
+            Storage::delete($user->profile_picture);
+            $profilePicturePath = $this->service->store($request, 'profile_pictures');
 
             $validatedData['profile_picture'] = $profilePicturePath;
         }
-        // Update the user inside a transaction
+
         return DB::transaction(function () use ($validatedData, $user) {
             return $user->update($validatedData);
         });
@@ -38,6 +39,7 @@ class UserService
     public function remove(User $user)
     {
         return DB::transaction(function () use ($user) {
+            Storage::delete($user->profile_picture);
             $user->delete();
         });
     }

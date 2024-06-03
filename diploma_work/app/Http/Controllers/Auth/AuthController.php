@@ -66,7 +66,7 @@ class AuthController extends Controller
     {
         $response = $this->service->createUser($request);
 
-        return (new UserResource($response['user']))->additional(['token' => $response['token']]);
+        return (new UserResource($response['user']))->additional(['access_token' => $response['token']]);
     }
 
     /**
@@ -122,7 +122,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         $token = $this->service->loginUser($user);
-        return (new UserResource($user))->additional(['token' => $token]);
+        return (new UserResource($user))->additional(['access_token' => $token]);
     }
 
     /**
