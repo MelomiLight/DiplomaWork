@@ -15,10 +15,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup SSH
         run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
+          cat id_rsa
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          mv id_rsa ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+      - name: Test SSH Connection
+        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo Connection Successful"
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
