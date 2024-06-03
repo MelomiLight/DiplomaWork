@@ -1,7 +1,5 @@
 name: Deploy
 
-# Trigger the workflow on push and
-# pull request events on the production branch
 on:
   push:
     branches:
@@ -10,18 +8,22 @@ on:
     branches:
       - main
 
-# Authenticate to the the server via ssh
-# and run our deployment script
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
-          key: ${{ secrets.SSHKEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: "cd /var/www/backend/diploma_work && ./.scripts/deploy.sh"
