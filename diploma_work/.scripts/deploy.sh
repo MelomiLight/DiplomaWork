@@ -7,8 +7,14 @@ echo "Deployment started ..."
 # if already is in maintenance mode
 (php artisan down) || true
 
+# Stash any local changes
+git stash --include-untracked
+
 # Pull the latest version of the app
 git pull origin main --no-edit
+
+# Apply stashed changes, if any
+git stash pop || true
 
 # Install composer dependencies
 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
