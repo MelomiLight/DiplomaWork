@@ -119,6 +119,12 @@ class UserController extends Controller
         $run_info = new RunInformationResource($user->runInformation);
         return (new UserResource($user))->additional(['run_info' => $run_info]);
     }
+
+    public function get(UserRequest $request): UserResource
+    {
+        $run_info = new RunInformationResource($request->user()->runInformation);
+        return (new UserResource($request->user()))->additional(['run_info' => $run_info]);
+    }
     /**
      * Display a listing of the users.
      *
