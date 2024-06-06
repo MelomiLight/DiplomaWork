@@ -12,7 +12,15 @@ class Challenge extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'title',
+        'description',
+        'due_type',
+        'challenge_type',
+        'is_active',
+        'points',
+        'distance_km',
+    ];
 
     public function userChallenges(): HasMany
     {

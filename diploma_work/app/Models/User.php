@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -22,6 +23,10 @@ class User extends Authenticatable
         'weight_kg',
         'height_cm',
         'points',
+        'initialized',
+        'isMale',
+        'birthDate',
+        'fitPercentage',
     ];
 
     protected $hidden = [
