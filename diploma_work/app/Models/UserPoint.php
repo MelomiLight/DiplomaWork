@@ -10,7 +10,12 @@ class UserPoint extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'prev_points',
+        'earned_points',
+        'earned_date'
+    ];
 
     public function user(): BelongsTo
     {

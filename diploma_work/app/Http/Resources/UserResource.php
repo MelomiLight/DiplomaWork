@@ -42,6 +42,9 @@ class UserResource extends JsonResource
             'running_sessions' => RunningSessionResource::collection($this->runningSessions),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'isMale' => $this->isMale,
+            'birthDate' => $this->birthDate,
+            'fitPercentage' => $this->firPercentage,
         ];
     }
 

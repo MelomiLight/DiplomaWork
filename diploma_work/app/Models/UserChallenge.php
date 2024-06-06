@@ -12,7 +12,11 @@ class UserChallenge extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'challenge_id',
+        'challenge_status',
+    ];
 
     public function user(): BelongsTo
     {

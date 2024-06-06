@@ -29,6 +29,9 @@ class UserRequest extends FormRequest
             'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'weight_kg' => ['nullable', 'numeric', 'between:0,500'],
             'height_cm' => ['nullable', 'numeric', 'between:0,300'],
+            'isMale' => ['nullable', 'in:0,1'],
+            'birthDate' => ['nullable', 'date_format:Y-m-d'],
+            'fitPercentage' => ['nullable', 'numeric', 'between:0,1'],
         ];
     }
 }
