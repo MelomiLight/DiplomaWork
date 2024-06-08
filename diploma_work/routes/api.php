@@ -29,7 +29,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/index', [UserController::class, 'index']);
         Route::get('/{user}', [UserController::class, 'show']);
         Route::patch('/', [UserController::class, 'update']);
-        Route::delete('/{user}', [UserController::class, 'destroy']);
+        Route::delete('/', [UserController::class, 'destroy']);
 
         Route::prefix('/challenges')->group(function () {
             Route::post('/', [UserChallengeController::class, 'store']);
