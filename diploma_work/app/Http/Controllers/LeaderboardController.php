@@ -116,7 +116,7 @@ class LeaderboardController extends Controller
         $result = $leaderboard->map(function ($userPoint) {
             return [
                 'total_points' => $userPoint->total_points,
-                'total_distance' => (string)($userPoint->user->runInformation->distance ?? 0),
+                'total_distance' => (string)round($userPoint->user->runInformation->distance ?? 0, 2),
                 'user' => $userPoint->user,
             ];
         });

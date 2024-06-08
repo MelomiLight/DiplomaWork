@@ -6,6 +6,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,11 +42,11 @@ class UserService
     }
 
 
-    public function remove(User $user)
+    public function remove(Request $request)
     {
-        return DB::transaction(function () use ($user) {
-            Storage::delete($user->profile_picture);
-            $user->delete();
+        return DB::transaction(function () use ($request) {
+            Storage::delete($request->user()->profile_picture);
+            $request->user()->delete();
         });
     }
 

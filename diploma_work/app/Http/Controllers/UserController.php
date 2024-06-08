@@ -10,6 +10,7 @@ use App\Repositories\UserRepository;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 
@@ -185,9 +186,9 @@ class UserController extends Controller
      *      )
      * )
      */
-    public function destroy(User $user): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
-        $this->service->remove($user);
+        $this->service->remove($request);
         return response()->json(['message' => __('messages.delete_success', ['attribute' => 'User'])]);
     }
 }

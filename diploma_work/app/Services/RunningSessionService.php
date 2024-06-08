@@ -24,48 +24,52 @@ class RunningSessionService
 
     public function addRunInformation(RunningSession $runningSession): void
     {
-        // Retrieve the user with their run information
         $user = User::with('runInformation')->find($runningSession->user_id);
+
+        $distance = round($runningSession->distance_km, 2);
+        $calories = round($runningSession->calories_burned, 2);
+        $totalTime = $runningSession->total_time;
 
         if ($user && $user->runInformation) {
             $runInformation = $user->runInformation;
 
-            $runInformation->daily_distance_km += $runningSession->distance_km;
-            $runInformation->daily_time = $this->addTimes($runInformation->daily_time, $runningSession->total_time);
-            $runInformation->daily_calories_burned += $runningSession->calories_burned;
+            $runInformation->daily_distance_km = round($runInformation->daily_distance_km + $distance, 2);
+            $runInformation->daily_time = $this->addTimes($runInformation->daily_time, $totalTime);
+            $runInformation->daily_calories_burned = round($runInformation->daily_calories_burned + $calories, 2);
 
-            $runInformation->weekly_distance_km += $runningSession->distance_km;
-            $runInformation->weekly_time = $this->addTimes($runInformation->weekly_time, $runningSession->total_time);
-            $runInformation->weekly_calories_burned += $runningSession->calories_burned;
+            $runInformation->weekly_distance_km = round($runInformation->weekly_distance_km + $distance, 2);
+            $runInformation->weekly_time = $this->addTimes($runInformation->weekly_time, $totalTime);
+            $runInformation->weekly_calories_burned = round($runInformation->weekly_calories_burned + $calories, 2);
 
-            $runInformation->monthly_distance_km += $runningSession->distance_km;
-            $runInformation->monthly_time = $this->addTimes($runInformation->monthly_time, $runningSession->total_time);
-            $runInformation->monthly_calories_burned += $runningSession->calories_burned;
+            $runInformation->monthly_distance_km = round($runInformation->monthly_distance_km + $distance, 2);
+            $runInformation->monthly_time = $this->addTimes($runInformation->monthly_time, $totalTime);
+            $runInformation->monthly_calories_burned = round($runInformation->monthly_calories_burned + $calories, 2);
 
-            $runInformation->total_distance_km += $runningSession->distance_km;
-            $runInformation->total_time = $this->addTimes($runInformation->total_time, $runningSession->total_time);
-            $runInformation->total_calories_burned += $runningSession->calories_burned;
+            $runInformation->total_distance_km = round($runInformation->total_distance_km + $distance, 2);
+            $runInformation->total_time = $this->addTimes($runInformation->total_time, $totalTime);
+            $runInformation->total_calories_burned = round($runInformation->total_calories_burned + $calories, 2);
 
             // Save the updated run information
             $runInformation->save();
         } else {
             RunInformation::create([
                 'user_id' => $runningSession->user_id,
-                'daily_distance_km' => $runningSession->distance_km,
-                'daily_time' => $runningSession->total_time,
-                'daily_calories_burned' => $runningSession->calories_burned,
-                'weekly_distance_km' => $runningSession->distance_km,
-                'weekly_time' => $runningSession->total_time,
-                'weekly_calories_burned' => $runningSession->calories_burned,
-                'monthly_distance_km' => $runningSession->distance_km,
-                'monthly_time' => $runningSession->total_time,
-                'monthly_calories_burned' => $runningSession->calories_burned,
-                'total_distance_km' => $runningSession->distance_km,
-                'total_time' => $runningSession->total_time,
-                'total_calories_burned' => $runningSession->calories_burned,
+                'daily_distance_km' => $distance,
+                'daily_time' => $totalTime,
+                'daily_calories_burned' => $calories,
+                'weekly_distance_km' => $distance,
+                'weekly_time' => $totalTime,
+                'weekly_calories_burned' => $calories,
+                'monthly_distance_km' => $distance,
+                'monthly_time' => $totalTime,
+                'monthly_calories_burned' => $calories,
+                'total_distance_km' => $distance,
+                'total_time' => $totalTime,
+                'total_calories_burned' => $calories,
             ]);
         }
     }
+
 
     public function addUserPoints(RunningSession $runningSession): void
     {
