@@ -17,5 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+../.github/workflows/main.yml
 
 .vercel
