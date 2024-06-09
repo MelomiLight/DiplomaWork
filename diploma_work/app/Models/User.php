@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -34,6 +35,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+
+    protected static function booted()
+    {
+        static::deleting(function ($user) {
+            Storage::delete($user->profile_picture);
+        });
+    }
     protected function casts(): array
     {
         return [

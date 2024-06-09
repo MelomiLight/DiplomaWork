@@ -45,7 +45,6 @@ class UserService
     public function remove(Request $request)
     {
         return DB::transaction(function () use ($request) {
-            Storage::delete($request->user()->profile_picture);
             $request->user()->delete();
         });
     }
