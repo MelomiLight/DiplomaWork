@@ -6,8 +6,10 @@ use App\Interfaces\ChallengeInterface;
 use App\Models\User;
 use App\Models\UserChallenge;
 use App\Models\UserPoint;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
-class DistanceChallengeController extends Controller implements ChallengeInterface
+class TimeChallengeController extends Controller implements ChallengeInterface
 {
     public function checkConditions(User $user, UserChallenge $userChallenge): bool
     {
@@ -19,9 +21,12 @@ class DistanceChallengeController extends Controller implements ChallengeInterfa
         };
     }
 
-    public function checkCondition(User $user, UserChallenge $userChallenge, $distance): bool
+    public function checkCondition(User $user, UserChallenge $userChallenge, $time): bool
     {
-        if ($distance >= $userChallenge->challenge->distance_km) {
+        $challengeTime = Carbon::createFromFormat('H:i:s', $userChallenge->challenge->time);
+        $userTime = Carbon::createFromFormat('H:i:s', $time);
+
+        if ($userTime->greaterThanOrEqualTo($challengeTime)) {
             $userChallenge->challenge_status = true;
             $user->points += $userChallenge->challenge->points;
 
@@ -43,16 +48,16 @@ class DistanceChallengeController extends Controller implements ChallengeInterfa
 
     public function checkDaily(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->daily_distance_km);
+        return $this->checkCondition($user, $userChallenge, $user->runInformation->daily_time);
     }
 
     public function checkWeekly(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->weekly_distance_km);
+        return $this->checkCondition($user, $userChallenge, $user->runInformation->weekly_time);
     }
 
     public function checkMonthly(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->monthly_distance_km);
+        return $this->checkCondition($user, $userChallenge, $user->runInformation->monthly_time);
     }
 }

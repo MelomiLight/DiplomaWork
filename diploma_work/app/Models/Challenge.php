@@ -20,6 +20,11 @@ class Challenge extends Model
         'is_active',
         'points',
         'distance_km',
+        'time',
+    ];
+
+    protected $casts = [
+        'time' => 'datetime:H:i:s',
     ];
 
     public function userChallenges(): HasMany
