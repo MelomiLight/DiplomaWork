@@ -98,12 +98,17 @@ class RunningSessionService
         $time1 = $time1 ?: '00:00:00';
         $time2 = $time2 ?: '00:00:00';
 
-        $time1 = Carbon::createFromFormat('H:i:s', $time1);
-        $time2 = Carbon::createFromFormat('H:i:s', $time2);
+        try {
+            $time1 = Carbon::createFromFormat('H:i:s', $time1);
+            $time2 = Carbon::createFromFormat('H:i:s', $time2);
 
-        $totalSeconds = $time1->secondsSinceMidnight() + $time2->secondsSinceMidnight();
-        $totalTime = CarbonInterval::seconds($totalSeconds)->cascade();
+            $totalSeconds = $time1->diffInSeconds($time2);
+            $totalTime = CarbonInterval::seconds($totalSeconds)->cascade();
 
-        return $totalTime->format('%H:%I:%S');
+            return sprintf('%02d:%02d:%02d', $totalTime->hours, $totalTime->minutes, $totalTime->seconds);
+        } catch (\Exception $e) {
+            // Handle exception if the time format is incorrect
+            return '00:00:00';
+        }
     }
 }

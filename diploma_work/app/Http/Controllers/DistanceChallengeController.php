@@ -43,16 +43,28 @@ class DistanceChallengeController extends Controller implements ChallengeInterfa
 
     public function checkDaily(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->daily_distance_km);
+        if ($user->runInformation) {
+            return $this->checkCondition($user, $userChallenge, $user->runInformation->daily_distance_km);
+        }
+
+        return false;
     }
 
     public function checkWeekly(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->weekly_distance_km);
+        if ($user->runInformation) {
+            return $this->checkCondition($user, $userChallenge, $user->runInformation->weekly_distance_km);
+        }
+
+        return false;
     }
 
     public function checkMonthly(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->monthly_distance_km);
+        if ($user->runInformation) {
+            return $this->checkCondition($user, $userChallenge, $user->runInformation->monthly_distance_km);
+        }
+
+        return false;
     }
 }

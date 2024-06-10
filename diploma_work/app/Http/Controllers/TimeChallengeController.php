@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\UserChallenge;
 use App\Models\UserPoint;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class TimeChallengeController extends Controller implements ChallengeInterface
 {
@@ -48,16 +47,28 @@ class TimeChallengeController extends Controller implements ChallengeInterface
 
     public function checkDaily(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->daily_time);
+        if ($user->runInformation && !empty($user->runInformation->daily_time)) {
+            return $this->checkCondition($user, $userChallenge, $user->runInformation->daily_time);
+        }
+
+        return false;
     }
 
     public function checkWeekly(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->weekly_time);
+        if ($user->runInformation && !empty($user->runInformation->weekly_time)) {
+            return $this->checkCondition($user, $userChallenge, $user->runInformation->weekly_time);
+        }
+
+        return false;
     }
 
     public function checkMonthly(User $user, UserChallenge $userChallenge): bool
     {
-        return $this->checkCondition($user, $userChallenge, $user->runInformation->monthly_time);
+        if ($user->runInformation && !empty($user->runInformation->monthly_time)) {
+            return $this->checkCondition($user, $userChallenge, $user->runInformation->monthly_time);
+        }
+
+        return false;
     }
 }
