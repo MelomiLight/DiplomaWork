@@ -28,6 +28,10 @@ class RunningSession extends Model
         'end_time' => 'datetime',
     ];
 
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
     /**
      * Get the user that owns the running session.
      */

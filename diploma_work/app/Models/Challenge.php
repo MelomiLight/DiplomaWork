@@ -27,6 +27,11 @@ class Challenge extends Model
         'time' => 'datetime:H:i:s',
     ];
 
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
+
     public function userChallenges(): HasMany
     {
         return $this->hasMany(UserChallenge::class);

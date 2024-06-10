@@ -23,8 +23,8 @@ class RunningSessionRequest extends FormRequest
     {
         return [
             'distance_km' => ['nullable', 'numeric', 'min:0'],
-            'start_time' => ['nullable', 'date'],
-            'end_time' => ['nullable', 'date', 'after_or_equal:start_time'],
+            'start_time' => ['nullable', 'date_format:Y-m-d H:i:s'],
+            'end_time' => ['nullable', 'date_format:Y-m-d H:i:s', 'after_or_equal:start_time'],
             'total_time' => ['nullable', 'date_format:H:i:s'],
             'average_speed' => ['nullable', 'numeric', 'min:0'],
             'max_speed' => ['nullable', 'numeric', 'min:0'],
