@@ -36,7 +36,7 @@ class User extends Authenticatable
     ];
 
 
-    protected static function booted()
+    protected static function booted(): void
     {
         static::deleting(function ($user) {
             Storage::delete($user->profile_picture);
