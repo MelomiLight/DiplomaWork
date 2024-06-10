@@ -68,7 +68,9 @@ class CheckChallengesController extends Controller
         foreach ($user->userChallenges as $userChallenge) {
             if (!$userChallenge->challenge_status) {
                 if ($userChallenge->challenge->challenge_type == 'distanceChallenge') {
-                    $context = new ContextService(new DistanceChallengeController($this->service));
+                    $context = new ContextService(new DistanceChallengeController());
+                }else if ($userChallenge->challenge->challenge_type == 'timeChallenge'){
+                    $context = new ContextService(new TimeChallengeController());
                 }
 
                 if ($context) {
