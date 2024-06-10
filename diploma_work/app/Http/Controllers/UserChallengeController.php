@@ -110,7 +110,6 @@ class UserChallengeController extends Controller
     public function show(Request $request): JsonResponse
     {
         $userChallenges = $request->user()->userChallenges;
-
         $groupedChallenges = $userChallenges->groupBy(function ($item) {
             return $item->challenge->due_type;
         });
