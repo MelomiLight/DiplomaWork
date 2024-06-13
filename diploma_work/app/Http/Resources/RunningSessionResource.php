@@ -40,6 +40,8 @@ class RunningSessionResource extends JsonResource
             'max_speed'=>$this->max_speed,
             'calories_burned'=>$this->calories_burned,
             'points'=>$this->points,
+            'speeds' => $this->speeds,
+            'locations' => $this->locations,
         ];
     }
 }

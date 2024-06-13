@@ -105,8 +105,7 @@ class RunningSessionController extends Controller
     public function store(RunningSessionRequest $request): RunningSessionResource
     {
         $runningSession = $this->service->create($request);
-        $this->service->addUserPoints($runningSession);
-        $this->service->addRunInformation($runningSession);
+
         return new RunningSessionResource($runningSession);
     }
 
