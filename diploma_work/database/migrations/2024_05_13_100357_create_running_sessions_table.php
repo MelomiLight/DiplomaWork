@@ -14,14 +14,16 @@ return new class extends Migration
         Schema::create('running_sessions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->float('distance_km')->nullable(); // distance covered
+            $table->decimal('distance_km')->change();
             $table->timestamp('start_time')->nullable(); // start of the session
             $table->timestamp('end_time')->nullable(); // end of the session
             $table->time('total_time')->nullable();
-            $table->float('average_speed')->nullable(); // average speed
-            $table->float('max_speed')->nullable(); // maximum speed
-            $table->float('calories_burned')->nullable(); // kilocalories burned
+            $table->decimal('average_speed')->change();
+            $table->decimal('max_speed')->change();
+            $table->decimal('calories_burned')->change();
             $table->integer('points')->nullable(); // points earned
+            $table->json('speeds')->nullable();
+            $table->json('locations')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
