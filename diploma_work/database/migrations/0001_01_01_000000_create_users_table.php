@@ -23,6 +23,9 @@ return new class extends Migration
             $table->text('profile_picture')->nullable();
             $table->string('reset_code')->nullable();
             $table->boolean('initialized')->default(false);
+            $table->boolean('isMale')->default(1);
+            $table->date('birthDate')->nullable();
+            $table->decimal('fitPercentage')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

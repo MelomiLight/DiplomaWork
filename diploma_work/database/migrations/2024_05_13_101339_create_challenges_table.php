@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->boolean('is_active')->default(false);
             $table->integer('points')->nullable();
             $table->float('distance_km')->nullable(); // required distance in km
+            $table->time('time')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
