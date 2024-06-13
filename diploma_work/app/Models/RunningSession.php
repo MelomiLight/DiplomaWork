@@ -22,6 +22,12 @@ class RunningSession extends Model
         'max_speed',
         'calories_burned',
         'points',
+        'speeds',
+        'locations'
+    ];
+    protected $casts = [
+        'speeds' => 'array',
+        'locations' => 'array'
     ];
 
     protected function serializeDate(DateTimeInterface $date): string

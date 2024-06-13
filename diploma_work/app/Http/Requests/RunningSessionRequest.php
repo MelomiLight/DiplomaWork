@@ -22,17 +22,17 @@ class RunningSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'distance_km' => ['nullable', 'numeric', 'min:0'],
-            'start_time' => ['nullable', 'date'],
-            'end_time' => ['nullable', 'date', 'after_or_equal:start_time'],
-            'total_time' => ['nullable', 'date_format:H:i:s'],
-            'average_speed' => ['nullable', 'numeric', 'min:0'],
-            'max_speed' => ['nullable', 'numeric', 'min:0'],
-            'calories_burned' => ['nullable', 'numeric', 'min:0'],
-            'points' => ['nullable', 'integer', 'min:0'],
-            'speeds' => ['nullable', 'array'],
-            'speeds .*' => ['numeric', 'min:0'],
-            'locations' => ['nullable', 'array'],
+            'distance_km' => ['required', 'numeric', 'min:0'],
+            'start_time' => ['required', 'date'],
+            'end_time' => ['required', 'date', 'after_or_equal:start_time'],
+            'total_time' => ['required', 'date_format:H:i:s'],
+            'average_speed' => ['required', 'numeric', 'min:0'],
+            'max_speed' => ['required', 'numeric', 'min:0'],
+            'calories_burned' => ['required', 'numeric', 'min:0'],
+            'points' => ['required', 'integer', 'min:0'],
+            'speeds' => ['required', 'array'],
+            'speeds .*' => ['nullable', 'min:0'],
+            'locations' => ['required', 'array'],
             'locations.*.latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'locations.*.longitude' => ['nullable', 'numeric', 'between:-180,180'],
         ];
