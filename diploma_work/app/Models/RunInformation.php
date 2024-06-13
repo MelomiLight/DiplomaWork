@@ -28,12 +28,12 @@ class RunInformation extends Model
         'total_calories_burned'
     ];
 
-    protected $casts = [
-        'daily_time' => 'datetime:H:i:s',
-        'weekly_time' => 'datetime:H:i:s',
-        'monthly_time' => 'datetime:H:i:s',
-        'total_time' => 'datetime:H:i:s',
-    ];
+//    protected $casts = [
+//        'daily_time' => 'datetime:H:i:s',
+//        'weekly_time' => 'datetime:H:i:s',
+//        'monthly_time' => 'datetime:H:i:s',
+//        'total_time' => 'datetime:H:i:s',
+//    ];
     protected function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('Y-m-d H:i:s');

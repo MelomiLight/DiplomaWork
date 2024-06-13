@@ -22,10 +22,11 @@ class TimeChallengeController extends Controller implements ChallengeInterface
 
     public function checkCondition(User $user, UserChallenge $userChallenge, $time): bool
     {
-        $challengeTime = Carbon::createFromFormat('H:i:s', $userChallenge->challenge->time);
-        $userTime = Carbon::createFromFormat('H:i:s', $time);
+        $challengeTime = Carbon::parse($userChallenge->challenge->time);
+        $userTime = Carbon::parse($time);
 
         if ($userTime->greaterThanOrEqualTo($challengeTime)) {
+
             $userChallenge->challenge_status = true;
             $user->points += $userChallenge->challenge->points;
 
