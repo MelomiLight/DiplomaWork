@@ -7,9 +7,8 @@ use App\Models\RunInformation;
 use App\Models\RunningSession;
 use App\Models\User;
 use App\Models\UserPoint;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Carbon\CarbonInterval;
+use Illuminate\Support\Facades\DB;
 
 class RunningSessionService
 {
@@ -116,22 +115,17 @@ class RunningSessionService
         });
     }
 
-    private function addTimes($time1, $time2): string
+    private function addTimes(string $time1, string $time2): string
     {
-        $time1 = $time1 ?: '00:00:00';
-        $time2 = $time2 ?: '00:00:00';
 
-        try {
-            $time1 = Carbon::createFromFormat('H:i:s', $time1);
-            $time2 = Carbon::createFromFormat('H:i:s', $time2);
+        $time1Carbon = Carbon::createFromTimeString($time1);
 
-            $totalSeconds = $time1->diffInSeconds($time2);
-            $totalTime = CarbonInterval::seconds($totalSeconds)->cascade();
+        list($hours, $minutes, $seconds) = array_map('intval', explode(':', $time2));
 
-            return sprintf('%02d:%02d:%02d', $totalTime->hours, $totalTime->minutes, $totalTime->seconds);
-        } catch (\Exception $e) {
-            // Handle exception if the time format is incorrect
-            return '00:00:00';
-        }
+        $newDateTime = $time1Carbon->addHours($hours)->addMinutes($minutes)->addSeconds($seconds);
+
+        // Format the result as H:i:s
+        return $newDateTime->toTimeString();
     }
+
 }

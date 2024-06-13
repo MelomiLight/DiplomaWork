@@ -29,6 +29,7 @@ class ChallengeRequest extends FormRequest
             'is_active' => ['boolean'],
             'points' => ['required', 'integer'],
             'distance_km' => ['nullable', 'numeric', 'min:0'],
+            'time' => ['nullable', 'date_format:H:i:s', 'min:0'],
         ];
     }
 }
