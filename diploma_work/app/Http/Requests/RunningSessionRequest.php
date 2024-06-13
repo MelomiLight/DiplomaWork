@@ -30,11 +30,11 @@ class RunningSessionRequest extends FormRequest
             'max_speed' => ['nullable', 'numeric', 'min:0'],
             'calories_burned' => ['nullable', 'numeric', 'min:0'],
             'points' => ['nullable', 'integer', 'min:0'],
-            'speeds' => ['required', 'array'],
+            'speeds' => ['nullable', 'array'],
             'speeds .*' => ['numeric', 'min:0'],
-            'locations' => ['required', 'array'],
-            'locations.*.latitude' => ['required', 'numeric', 'between:-90,90'],
-            'locations.*.longitude' => ['required', 'numeric', 'between:-180,180'],
+            'locations' => ['nullable', 'array'],
+            'locations.*.latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'locations.*.longitude' => ['nullable', 'numeric', 'between:-180,180'],
         ];
     }
 }
