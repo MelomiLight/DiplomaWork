@@ -8,6 +8,7 @@ use App\Models\RunningSession;
 use App\Repositories\RunningSessionRepository;
 use App\Services\RunningSessionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class RunningSessionController extends Controller
@@ -58,7 +59,7 @@ class RunningSessionController extends Controller
      *      )
      * )
      */
-    public function index(RunningSessionRequest $request): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
         $runningSessions = $this->repository->all($request->user());
         return RunningSessionResource::collection($runningSessions);
