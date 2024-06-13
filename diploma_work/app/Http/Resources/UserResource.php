@@ -39,7 +39,6 @@ class UserResource extends JsonResource
             'weight_kg' => $this->weight_kg,
             'height_cm' => $this->height_cm,
             'points' => $this->points,
-            'running_sessions' => RunningSessionResource::collection($this->runningSessions),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'isMale' => $this->isMale,

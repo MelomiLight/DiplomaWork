@@ -32,7 +32,6 @@ class ChallengeResource extends JsonResource
             'description' => $this->description,
             'due_type'=>$this->due_type,
             'challenge_type'=>$this->challenge_type,
-            'is_active'=>$this->is_active,
             'points'=>$this->points,
         ];
     }
